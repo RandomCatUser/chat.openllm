@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Login | Cute GSAP</title>
+    <!-- GSAP for professional animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Cute Rounded Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+            --accent: #ffffff;
+            --glass-err: rgba(255, 107, 107, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Quicksand', sans-serif;
+            background: url('https://e1.pxfuel.com/desktop-wallpaper/328/40/desktop-wallpaper-lo-fi-boy.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transition: background 1.2s ease;
+        }
+
+        /* Clock Section */
+        #clock-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        #date-label {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        #clock-label {
+            font-size: 7rem;
+            font-weight: 300;
+            letter-spacing: -2px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Swipe to Unlock Slider */
+        #swipe-container {
+            position: absolute;
+            bottom: 80px;
+            z-index: 20;
+            width: 280px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            padding: 6px;
+        }
+
+        #swipe-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            background: linear-gradient(90deg, #aaa, #fff, #aaa);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        #swipe-handle {
+            width: 52px;
+            height: 52px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        /* Frameless Login Interface */
+        #login-panel {
+            position: absolute;
+            z-index: 30;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .profile-area {
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .user-name {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin: 25px auto 0;
+            width: 280px;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 16px;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            outline: none;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .caps { text-transform: uppercase; }
+
+        .arrow-btn {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            color: black;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .step-container { display: none; }
+        .step-container.active { display: block; }
+
+        /* Glassy Error Message */
+        .error-msg {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -45px;
+            width: 100%;
+            font-size: 13px;
+            font-weight: 500;
+            color: #ffbaba;
+            background: var(--glass-err);
+            backdrop-filter: blur(8px);
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .role-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="bg-overlay"></div>
+
+<!-- Initial View -->
+<div id="clock-container">
+    <div id="date-label">Saturday, February 21</div>
+    <div id="clock-label">00:00</div>
+</div>
+
+<div id="swipe-container">
+    <div id="swipe-text">swipe to unlock</div>
+    <div id="swipe-handle">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </div>
+</div>
+
+<!-- Frameless Login -->
+<div id="login-panel">
+    <div class="profile-area">
+        <div class="avatar" id="avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="40" height="40">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        <div class="user-name">Dihan Ramanayaka</div>
+        <div class="user-role" id="role-text">Admin, Cute</div>
+    </div>
+
+    <!-- Step 1: Password Only -->
+    <div id="step-1" class="step-container active">
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password">
+            <div id="err-1" class="error-msg">Passcode is incorrect •ᴗ•</div>
+        </div>
+        <button class="arrow-btn" id="btn-1" onclick="handleStep1()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Step 2: Verification -->
+    <div id="step-2" class="step-container">
+        <div class="input-group">
+            <input type="text" id="vcode" class="caps" placeholder="Enter Code">
+            <div id="err-2" class="error-msg">Invalid protocol code</div>
+        </div>
+        <button class="arrow-btn" onclick="handleStep2()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div id="step-3" class="step-container">
+        <p style="font-size: 16px; font-weight: 500; opacity: 0.9; margin-bottom: 20px;">Identity Confirmed ✨</p>
+        <p style="font-size: 13px; opacity: 0.6;">Redirecting to Openeria...</p>
+    </div>
+</div>
+
+<script>
+    const AUTH = {
+        pass: "6255078",
+        code: "MEOW"
+    };
+
+    // Swipe Mechanic with GSAP
+    const handle = document.getElementById('swipe-handle');
+    const container = document.getElementById('swipe-container');
+    let isDragging = false;
+    let startX = 0;
+    const maxPath = container.clientWidth - handle.clientWidth - 12;
+
+    handle.addEventListener('mousedown', startDrag);
+    handle.addEventListener('touchstart', startDrag);
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('touchmove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchend', stopDrag);
+
+    function startDrag(e) {
+        isDragging = true;
+        startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+        const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        let delta = currentX - startX;
+        delta = Math.max(0, Math.min(delta, maxPath));
+        
+        gsap.set(handle, { x: delta });
+        gsap.set(container, { opacity: 1 - (delta / maxPath) });
+
+        if (delta >= maxPath) unlock();
+    }
+
+    function stopDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        gsap.to(handle, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.6)" });
+        gsap.to(container, { opacity: 1, duration: 0.5 });
+    }
+
+    function unlock() {
+        isDragging = false;
+        gsap.to('#clock-container', { y: -30, opacity: 0, duration: 0.7, ease: "power2.inOut" });
+        gsap.to('#swipe-container', { scale: 0.9, opacity: 0, duration: 0.4, onComplete: () => container.style.display = 'none' });
+        
+        gsap.to('body', { backdropFilter: "blur(50px) brightness(0.7)", duration: 1.2 });
+        gsap.to('#bg-overlay', { backgroundColor: "rgba(0,0,0,0.4)", duration: 1.2 });
+
+        const panel = document.getElementById('login-panel');
+        panel.style.visibility = 'visible';
+        
+        gsap.fromTo(panel, 
+            { opacity: 0, y: 30, scale: 0.95 }, 
+            { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.2)", delay: 0.4 }
+        );
+
+        gsap.from('.profile-area > *', {
+            opacity: 0,
+            y: 15,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.6
+        });
+        
+        gsap.from('.input-group, .arrow-btn', {
+            opacity: 0,
+            y: 15,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.9
+        });
+    }
+
+    document.querySelectorAll('.caps').forEach(input => {
+        input.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+    });
+
+    function handleStep1() {
+        const p = document.getElementById('password').value.trim();
+        const err = document.getElementById('err-1');
+
+        if (p === AUTH.pass) {
+            transitionSteps('step-1', 'step-2');
+        } else {
+            triggerError(err);
+        }
+    }
+
+    function handleStep2() {
+        const v = document.getElementById('vcode').value.trim().toUpperCase();
+        const err = document.getElementById('err-2');
+
+        if (v === AUTH.code) {
+            transitionSteps('step-2', 'step-3');
+            // Redirect after a short delay to allow success animation
+            setTimeout(() => {
+                window.location.href = 'openeria.html';
+            }, 1800);
+        } else {
+            triggerError(err);
+        }
+    }
+
+    function triggerError(el) {
+        gsap.to(el, { opacity: 1, y: 5, duration: 0.4, ease: "back.out" });
+        gsap.to('#login-panel', {
+            x: 8,
+            duration: 0.08,
+            repeat: 5,
+            yoyo: true,
+            onComplete: () => {
+                gsap.to('#login-panel', { x: 0, duration: 0.1 });
+                gsap.to(el, { opacity: 0, y: 0, duration: 0.4, delay: 2 });
+            }
+        });
+    }
+
+    function transitionSteps(current, next) {
+        gsap.to(`#${current}`, { 
+            opacity: 0, 
+            scale: 0.9,
+            duration: 0.3, 
+            onComplete: () => {
+                document.getElementById(current).style.display = 'none';
+                const nextEl = document.getElementById(next);
+                nextEl.style.display = 'block';
+                gsap.fromTo(nextEl, { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out" });
+            }
+        });
+    }
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock-label').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        document.getElementById('date-label').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+
+</body>
+</html>
