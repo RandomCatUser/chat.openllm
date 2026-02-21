@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Login | Cute GSAP</title>
+    <!-- GSAP for professional animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Cute Rounded Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+            --accent: #ffffff;
+            --glass-err: rgba(255, 107, 107, 0.2);
+            /* iOS Depth Effect: Adjust this gradient to 'hide' parts of the clock behind BG elements */
+            --clock-mask: linear-gradient(to bottom, black 85%, transparent 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Quicksand', sans-serif;
+            background: #1a1a1a url('assets/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* Ambient overlay for depth */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            z-index: 1;
+            transition: background 1.2s ease;
+        }
+
+        /* Clock Section - iOS Depth Styling */
+        #clock-container {
+            position: relative;
+            z-index: 5; /* Lower than UI, but interacts with background */
+            text-align: center;
+            will-change: transform, opacity, filter;
+            perspective: 1000px;
+        }
+
+        /* The 'Shadow' or Depth layer of the clock */
+        .clock-depth-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            filter: blur(20px);
+            opacity: 0.4;
+            transform: translateZ(-10px) translateY(10px);
+            pointer-events: none;
+        }
+
+        #date-label {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        #clock-label {
+            font-size: 8rem;
+            font-weight: 500;
+            letter-spacing: -4px;
+            line-height: 1;
+            /* This creates the illusion of being behind the BG subject */
+            -webkit-mask-image: var(--clock-mask);
+            mask-image: var(--clock-mask);
+            filter: drop-shadow(0 4px 30px rgba(0,0,0,0.3));
+        }
+
+        /* Swipe to Unlock Slider */
+        #swipe-container {
+            position: absolute;
+            bottom: 60px;
+            z-index: 20;
+            width: 280px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px) saturate(150%);
+            -webkit-backdrop-filter: blur(25px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #swipe-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { background-position: -150% 0; }
+            100% { background-position: 150% 0; }
+        }
+
+        #swipe-handle {
+            width: 52px;
+            height: 52px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        /* Login Panel */
+        #login-panel {
+            position: absolute;
+            z-index: 30;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .user-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            margin: 25px auto 0;
+            width: 280px;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 16px;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .arrow-btn {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            color: black;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 24px auto 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .arrow-btn:active { transform: scale(0.92); }
+
+        .step-container { display: none; }
+        .step-container.active { display: block; }
+
+        .error-msg {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -55px;
+            width: 90%;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 82, 82, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="bg-overlay"></div>
+
+<!-- Initial View with Depth Layers -->
+<div id="clock-container">
+    <div id="date-label">Saturday, February 21</div>
+    <div style="position: relative; display: inline-block;">
+        <!-- Deep blurred shadow layer -->
+        <div id="clock-label-shadow" class="clock-depth-layer">00:00</div>
+        <!-- Sharp primary layer -->
+        <div id="clock-label">00:00</div>
+    </div>
+</div>
+
+<div id="swipe-container">
+    <div id="swipe-text">swipe to unlock</div>
+    <div id="swipe-handle">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </div>
+</div>
+
+<!-- Frameless Login -->
+<div id="login-panel">
+    <div class="profile-area">
+        <div class="avatar" id="avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="40" height="40">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        <div class="user-name">Dihan Ramanayaka</div>
+        <div class="user-role" id="role-text">Admin, Cute</div>
+    </div>
+
+    <!-- Step 1: Password -->
+    <div id="step-1" class="step-container active">
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password">
+            <div id="err-1" class="error-msg">Passcode is incorrect •ᴗ•</div>
+        </div>
+        <button class="arrow-btn" id="btn-1" onclick="handleStep1()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Step 2: Verification -->
+    <div id="step-2" class="step-container">
+        <div class="input-group">
+            <input type="text" id="vcode" class="caps" placeholder="Enter Code">
+            <div id="err-2" class="error-msg">Invalid protocol code</div>
+        </div>
+        <button class="arrow-btn" onclick="handleStep2()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div id="step-3" class="step-container">
+        <p style="font-size: 18px; font-weight: 700; margin-bottom: 10px;"> </p>
+        <p style="font-size: 13px; opacity: 0.6;">Redirecting...</p>
+    </div>
+</div>
+
+<script>
+    const AUTH = {
+        pass: "6255078",
+        code: "MEOW"
+    };
+
+    const handle = document.getElementById('swipe-handle');
+    const container = document.getElementById('swipe-container');
+    const clock = document.getElementById('clock-container');
+    const clockLabel = document.getElementById('clock-label');
+    const clockShadow = document.getElementById('clock-label-shadow');
+    
+    let isDragging = false;
+    let startX = 0;
+    
+    const getMaxPath = () => container.clientWidth - handle.clientWidth - 12;
+
+    handle.addEventListener('mousedown', startDrag);
+    handle.addEventListener('touchstart', startDrag);
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('touchmove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchend', stopDrag);
+
+    function startDrag(e) {
+        isDragging = true;
+        startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        gsap.set(handle, { cursor: 'grabbing' });
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+        const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        let delta = currentX - startX;
+        const maxPath = getMaxPath();
+        delta = Math.max(0, Math.min(delta, maxPath));
+        
+        const progress = delta / maxPath;
+
+        gsap.set(handle, { x: delta });
+        gsap.set(container, { opacity: 1 - progress });
+        
+        // iOS-style clock interaction
+        gsap.set(clock, { 
+            opacity: 1 - (progress * 0.9), 
+            scale: 1 - (progress * 0.08),
+            filter: `blur(${progress * 15}px)`,
+            y: progress * -20
+        });
+
+        if (delta >= maxPath) unlock();
+    }
+
+    function stopDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        gsap.set(handle, { cursor: 'grab' });
+        
+        gsap.to(handle, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.6)" });
+        gsap.to(container, { opacity: 1, duration: 0.5 });
+        gsap.to(clock, { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, duration: 0.5 });
+    }
+
+    function unlock() {
+        isDragging = false;
+        
+        gsap.to(clock, { 
+            scale: 0.8, 
+            opacity: 0, 
+            filter: "blur(30px)",
+            duration: 0.8, 
+            ease: "power2.inOut" 
+        });
+
+        gsap.to('#swipe-container', { 
+            scale: 0.8, 
+            opacity: 0, 
+            duration: 0.4, 
+            onComplete: () => container.style.display = 'none' 
+        });
+        
+        gsap.to('body', { backdropFilter: "blur(70px) brightness(0.5)", duration: 1.5, ease: "power2.out" });
+        gsap.to('#bg-overlay', { backgroundColor: "rgba(0,0,0,0.65)", duration: 1.5 });
+
+        const panel = document.getElementById('login-panel');
+        panel.style.visibility = 'visible';
+        
+        gsap.fromTo(panel, 
+            { opacity: 0, y: 50, scale: 0.9 }, 
+            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "expo.out", delay: 0.3 }
+        );
+
+        gsap.from('.profile-area > *', {
+            opacity: 0,
+            y: 20,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.5
+        });
+        
+        gsap.from('.input-group, .arrow-btn', {
+            opacity: 0,
+            y: 20,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.8
+        });
+    }
+
+    document.querySelectorAll('.caps').forEach(input => {
+        input.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            if (step1.classList.contains('active')) handleStep1();
+            else if (step2.style.display === 'block') handleStep2();
+        }
+    });
+
+    function handleStep1() {
+        const p = document.getElementById('password').value.trim();
+        const err = document.getElementById('err-1');
+
+        if (p === AUTH.pass) transitionSteps('step-1', 'step-2');
+        else triggerError(err);
+    }
+
+    function handleStep2() {
+        const v = document.getElementById('vcode').value.trim().toUpperCase();
+        const err = document.getElementById('err-2');
+
+        if (v === AUTH.code) {
+            transitionSteps('step-2', 'step-3');
+            setTimeout(() => { window.location.href = 'menu.html'; }, 1800);
+        } else triggerError(err);
+    }
+
+    function triggerError(el) {
+        gsap.to(el, { opacity: 1, y: 5, duration: 0.4, ease: "back.out" });
+        gsap.to('#login-panel', {
+            x: 10,
+            duration: 0.07,
+            repeat: 5,
+            yoyo: true,
+            onComplete: () => {
+                gsap.to('#login-panel', { x: 0, duration: 0.1 });
+                gsap.to(el, { opacity: 0, y: 0, duration: 0.4, delay: 2 });
+            }
+        });
+    }
+
+    function transitionSteps(current, next) {
+        gsap.to(`#${current}`, { 
+            opacity: 0, 
+            scale: 0.9,
+            duration: 0.4, 
+            ease: "power2.in",
+            onComplete: () => {
+                const curEl = document.getElementById(current);
+                curEl.classList.remove('active');
+                curEl.style.display = 'none';
+                
+                const nextEl = document.getElementById(next);
+                nextEl.style.display = 'block';
+                
+                gsap.fromTo(nextEl, { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.2)" });
+                
+                const input = nextEl.querySelector('input');
+                if(input) input.focus();
+            }
+        });
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        clockLabel.innerText = timeStr;
+        clockShadow.innerText = timeStr;
+        document.getElementById('date-label').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+
+</body>
+</html>
