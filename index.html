@@ -414,6 +414,7 @@
 
     <script>
         let isProcessing = false;
+        let chatHistory = []; // Initialize chat memory
         
         const modelData = {
             cute: { name: 'OPENLLM 4.1 CUTE', path: 'randomcats/OpenLLM-4.1-Cute' },
@@ -422,7 +423,7 @@
             advanced: { name: 'OPENLLM 4.1 ADVANCED', path: 'randomcats/OpenLLM-4.1-Advanced' }
         };
 
-        const SYSTEM_INSTRUCTION = "Your name is OpenLLM. Developed by RandomCatsLab. Concise technical responses.";
+        const BASE_INSTRUCTION = "Your name is OpenLLM. Developed by RandomCatsLab. Concise technical responses. Use chat memory provided to maintain context.";
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -461,6 +462,7 @@
             document.getElementById('inst-path').innerText = meta.path;
             document.getElementById('inst-id').innerText = Math.random().toString(16).substr(2, 8).toUpperCase();
             document.getElementById('md-container').innerHTML = `<div class="message-block text-zinc-600">// KERNEL REBOOT: CONTEXT PURGED</div>`;
+            chatHistory = []; // Clear memory on model switch
         }
 
         function setStrat(type) {
@@ -486,15 +488,20 @@
             const messageId = "msg-" + Date.now();
             const messageDiv = document.createElement('div');
             messageDiv.className = "message-block";
-            messageDiv.innerHTML = `<div class="user-prompt">INPUT_STMT >> ${prompt}</div><div id="${messageId}" class="text-zinc-300">...</div>`;
+            messageDiv.innerHTML = `<div class="user-prompt">> ${prompt}</div><div id="${messageId}" class="text-zinc-300">...</div>`;
             container.appendChild(messageDiv);
             
             const typeTarget = document.getElementById(messageId);
             inputField.value = '';
-            inputField.blur(); // Hide keyboard on mobile after sending
+            inputField.blur(); 
+
+            // Construct system instruction with memory
+            const memoryString = chatHistory.length > 0 ? 
+                ` Previous context: ${chatHistory.map(h => `User: ${h.u} | OpenLLM: ${h.r}`).join(' || ')}` : "";
+            const dynamicSystem = BASE_INSTRUCTION + memoryString;
 
             try {
-                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(SYSTEM_INSTRUCTION)}`);
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(dynamicSystem)}`);
                 const text = await response.text();
                 
                 typeTarget.innerHTML = "";
@@ -506,6 +513,10 @@
                     if(i >= text.length) {
                         clearInterval(typing);
                         isProcessing = false;
+                        
+                        // Save to memory (keep last 5 exchanges to avoid token overflow)
+                        chatHistory.push({u: prompt, r: text});
+                        if(chatHistory.length > 5) chatHistory.shift();
                     }
                 }, 10);
             } catch (err) {
