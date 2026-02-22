@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OpenLLM - Chat</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,6 +26,7 @@
             font-size: 11px;
             background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
             background-size: 30px 30px;
+            touch-action: manipulation;
         }
 
         .exo-brand {
@@ -43,6 +44,7 @@
             display: grid;
             grid-template-columns: 1fr 340px; /* Default Desktop */
             height: 100vh;
+            width: 100%;
         }
 
         @media (max-width: 1023px) {
@@ -50,7 +52,8 @@
                 grid-template-columns: 1fr; /* Mobile view */
             }
             .exo-brand {
-                font-size: 28px;
+                font-size: 24px;
+                letter-spacing: -1px;
             }
         }
 
@@ -59,6 +62,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
         .node-connector {
@@ -78,6 +82,12 @@
             padding: 1px;
             z-index: 10;
             position: relative;
+        }
+
+        @media (max-width: 640px) {
+            .node-card {
+                width: 180px;
+            }
         }
 
         .node-inner {
@@ -123,7 +133,7 @@
             display: flex;
             flex-direction: column;
             max-height: 100vh;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @media (max-width: 1023px) {
@@ -132,57 +142,68 @@
                 right: 0;
                 top: 0;
                 bottom: 0;
-                width: 85%;
-                z-index: 50;
+                width: 100%; /* Full screen width on mobile for better focus */
+                z-index: 100;
                 transform: translateX(100%);
             }
             .sidebar.open {
                 transform: translateX(0);
             }
-            .overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.8);
-                z-index: 45;
-                display: none;
-            }
-            .overlay.active {
-                display: block;
-            }
             .mobile-toggle {
                 display: flex;
                 position: absolute;
-                top: 20px;
+                top: 24px;
                 right: 20px;
                 z-index: 40;
                 background: #111;
                 border: 1px solid var(--exo-border);
-                padding: 8px;
+                padding: 10px;
+                color: var(--exo-amber);
             }
         }
 
         @media (min-width: 1024px) {
             .mobile-toggle { display: none; }
-            .overlay { display: none !important; }
         }
 
         .markdown-body {
-            font-size: 10px;
+            font-size: 11px;
             line-height: 1.6;
             color: #ccc;
         }
 
+        /* Updated Input Dock for Mobile */
         .input-dock {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
             background: #000;
             border: 1px solid var(--exo-border);
             display: flex;
             align-items: center;
             padding: 4px;
             z-index: 30;
+            transition: all 0.3s ease;
+        }
+
+        /* Desktop Positioning */
+        @media (min-width: 1024px) {
+            .input-dock {
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Mobile Adjustments: Moved higher up */
+        @media (max-width: 1023px) {
+            .input-dock {
+                bottom: 80px; /* Shifted up from 20px */
+                left: 15px;
+                right: 15px;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            }
+            .chat-input {
+                font-size: 14px; /* Prevents iOS auto-zoom */
+            }
         }
 
         .chat-input {
@@ -190,18 +211,23 @@
             background: transparent;
             border: none;
             outline: none;
-            padding: 10px 15px;
+            padding: 12px 15px;
             color: #fff;
-            font-size: 11px;
         }
 
         .send-btn {
             background: #1a1a1a;
-            color: #fff;
+            color: var(--exo-amber);
             padding: 8px 15px;
             text-transform: uppercase;
             font-weight: bold;
             font-size: 9px;
+            border: 1px solid transparent;
+        }
+
+        .send-btn:active {
+            background: var(--exo-amber);
+            color: #000;
         }
 
         .instance-item {
@@ -217,7 +243,7 @@
             font-size: 8px;
             text-transform: uppercase;
             border: 1px solid var(--exo-border);
-            padding: 6px 8px;
+            padding: 10px 8px;
             color: #555;
             transition: all 0.2s;
             cursor: pointer;
@@ -230,14 +256,13 @@
             background: #000;
             border: 1px solid var(--exo-border);
             color: #fff;
-            font-size: 9px;
-            padding: 8px;
+            font-size: 10px;
+            padding: 10px;
             width: 100%;
             outline: none;
             appearance: none;
         }
 
-        /* Custom Range Slider Styling */
         .custom-range {
             -webkit-appearance: none;
             width: 100%;
@@ -249,47 +274,30 @@
 
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background: var(--exo-amber);
             border: 1px solid #000;
-            border-radius: 0;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 204, 51, 0.4);
-        }
-
-        .custom-range::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            background: var(--exo-amber);
-            border: 1px solid #000;
-            border-radius: 0;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 204, 51, 0.4);
         }
 
         .status-dot { width: 4px; height: 4px; background: #22c55e; display: inline-block; margin-right: 6px; }
         
-        #response-stream { scrollbar-width: thin; scrollbar-color: var(--exo-amber) transparent; }
         #response-stream::-webkit-scrollbar { width: 4px; }
         #response-stream::-webkit-scrollbar-thumb { background-color: var(--exo-amber); }
 
         .message-block { margin-bottom: 24px; border-left: 1px solid #1a1a1a; padding-left: 10px; }
-        .user-prompt { color: #555; margin-bottom: 8px; text-transform: uppercase; font-size: 8px; }
+        .user-prompt { color: var(--exo-amber); opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; font-size: 8px; }
     </style>
 </head>
 <body>
 
-    <div class="overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
     <div class="main-layout">
         <div class="canvas-area">
             <button class="mobile-toggle" onclick="toggleSidebar()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16m-7 6h7"/></svg>
             </button>
 
-            <header class="p-8 flex justify-between items-start">
+            <header class="p-6 lg:p-8 flex justify-between items-start">
                 <div class="exo-brand">OpenLLM</div>
                 <div class="hidden sm:block text-[9px] text-zinc-600 uppercase text-right leading-loose">
                     <span class="status-dot"></span> Cluster Online<br>
@@ -297,7 +305,7 @@
                 </div>
             </header>
 
-            <div class="flex-1 flex flex-col items-center justify-center gap-12 lg:gap-24 relative">
+            <div class="flex-1 flex flex-col items-center justify-center gap-12 lg:gap-24 relative pb-32">
                 <div class="node-connector"></div>
                 
                 <!-- Node: Strainge 2 -->
@@ -341,17 +349,17 @@
 
             <div class="input-dock">
                 <div class="hidden md:block px-4 text-zinc-700 border-r border-[#1a1a1a] text-[8px] uppercase" id="active-model-display">MODEL: OPENLLM 4.1 CUTE</div>
-                <input type="text" id="input" class="chat-input" placeholder="Neural command..." spellcheck="false">
+                <input type="text" id="input" class="chat-input" placeholder="Neural command..." spellcheck="false" autocomplete="off">
                 <button onclick="dispatch()" class="send-btn">Execute</button>
             </div>
         </div>
 
         <aside class="sidebar" id="sidebar">
-            <div class="p-5 border-b border-[#1a1a1a] flex-shrink-0">
+            <div class="p-6 border-b border-[#1a1a1a] flex-shrink-0">
                 <div class="flex justify-between items-center mb-6">
-                    <span class="text-[9px] uppercase tracking-widest text-zinc-500 font-bold">Instances</span>
-                    <button class="lg:hidden text-zinc-500" onclick="toggleSidebar()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    <span class="text-[10px] uppercase tracking-widest text-zinc-400 font-bold">System Console</span>
+                    <button class="lg:hidden text-zinc-500 p-2" onclick="toggleSidebar()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
                 </div>
                 
@@ -367,37 +375,35 @@
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-5" id="response-stream">
-                <div class="text-[8px] text-zinc-800 uppercase tracking-widest mb-4">Kernel_Output</div>
+            <div class="flex-1 overflow-y-auto p-6" id="response-stream">
+                <div class="text-[8px] text-zinc-700 uppercase tracking-widest mb-6 border-b border-[#1a1a1a] pb-2">Stream_Output</div>
                 <div id="md-container" class="markdown-body">
-                    <div class="message-block">// SYSTEM STANDBY...</div>
+                    <div class="message-block text-zinc-600">// STANDBY FOR COMMANDS...</div>
                 </div>
             </div>
 
-            <div class="p-5 border-t border-[#1a1a1a] bg-[#050505] flex-shrink-0">
+            <div class="p-6 border-t border-[#1a1a1a] bg-[#050505] flex-shrink-0 pb-10 lg:pb-6">
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-[9px] uppercase font-bold text-zinc-600">Provision Core</span>
                     <span class="text-[8px] text-zinc-800" id="model-count">04 MODELS</span>
                 </div>
-                <div class="space-y-4">
-                    <div class="space-y-1">
-                        <select id="model-selector" class="model-select" onchange="updateModel()">
-                            <option value="cute" selected>OpenLLM 4.1 Cute (Default)</option>
-                            <option value="quick">OpenLLM 4.1 Quick</option>
-                            <option value="pro">OpenLLM 4.1 Pro</option>
-                            <option value="advanced">OpenLLM 4.1 Advanced</option>
-                        </select>
-                    </div>
+                <div class="space-y-5">
+                    <select id="model-selector" class="model-select" onchange="updateModel()">
+                        <option value="cute" selected>OpenLLM 4.1 Cute</option>
+                        <option value="quick">OpenLLM 4.1 Quick</option>
+                        <option value="pro">OpenLLM 4.1 Pro</option>
+                        <option value="advanced">OpenLLM 4.1 Advanced</option>
+                    </select>
 
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         <div class="flex justify-between text-[7px] text-zinc-700 uppercase">
                             <span>Power Target</span>
-                            <span id="pwr-val">100%</span>
+                            <span id="pwr-val" class="text-zinc-400">100%</span>
                         </div>
                         <input type="range" min="10" max="100" value="100" class="custom-range" oninput="document.getElementById('pwr-val').innerText = this.value + '%'">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-3">
                         <div class="btn-action" id="strat-pipe" onclick="setStrat('Pipeline')">Pipeline</div>
                         <div class="btn-action active" id="strat-tens" onclick="setStrat('Tensor')">Tensor</div>
                     </div>
@@ -408,43 +414,40 @@
 
     <script>
         let isProcessing = false;
-        let chatHistory = []; 
+        let chatHistory = []; // Initialize chat memory
         
         const modelData = {
-            cute: { name: 'OPENLLM 4.1 CUTE', path: 'randomcats/OpenLLM-4.1-Cute', size: '12GB' },
-            quick: { name: 'OPENLLM 4.1 QUICK', path: 'randomcats/OpenLLM-4.1-Quick', size: '24GB' },
-            pro: { name: 'OPENLLM 4.1 PRO', path: 'randomcats/OpenLLM-4.1-Pro', size: '70GB' },
-            advanced: { name: 'OPENLLM 4.1 ADVANCED', path: 'randomcats/OpenLLM-4.1-Advanced', size: '175GB' }
+            cute: { name: 'OPENLLM 4.1 CUTE', path: 'randomcats/OpenLLM-4.1-Cute' },
+            quick: { name: 'OPENLLM 4.1 QUICK', path: 'randomcats/OpenLLM-4.1-Quick' },
+            pro: { name: 'OPENLLM 4.1 PRO', path: 'randomcats/OpenLLM-4.1-Pro' },
+            advanced: { name: 'OPENLLM 4.1 ADVANCED', path: 'randomcats/OpenLLM-4.1-Advanced' }
         };
 
-        const SYSTEM_INSTRUCTION = "Your name is OpenLLM. You were developed by RandomCatsLab. You provide highly accurate data. If you cannot answer, conclude with: /quit";
+        const BASE_INSTRUCTION = "Your name is OpenLLM. Developed by RandomCatsLab. Concise technical responses. Use chat memory provided to maintain context.";
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
             sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
         }
 
         function init() {
             document.getElementById('input').addEventListener('keypress', (e) => {
                 if(e.key === 'Enter') dispatch();
             });
-
-            setInterval(updateTelemetry, 2000);
-            gsap.from(".node-card", { opacity: 0, y: 20, stagger: 0.2, duration: 1, ease: "expo.out" });
+            setInterval(updateTelemetry, 2500);
+            gsap.from(".node-card", { opacity: 0, y: 30, stagger: 0.15, duration: 1.2, ease: "power4.out" });
         }
 
         function updateTelemetry() {
             const nodes = [1, 2];
             nodes.forEach(n => {
-                const load = Math.floor(Math.random() * 20) + (isProcessing ? 70 : 5);
-                const temp = Math.floor(Math.random() * 5) + (isProcessing ? 60 : 40);
-                const pwr = Math.floor(Math.random() * 10) + (isProcessing ? 80 : 20);
+                const load = Math.floor(Math.random() * 15) + (isProcessing ? 75 : 8);
+                const temp = Math.floor(Math.random() * 4) + (isProcessing ? 62 : 38);
+                const pwr = Math.floor(Math.random() * 8) + (isProcessing ? 85 : 12);
 
-                gsap.to(`#v-${n}-load`, { height: load + '%', duration: 1.5 });
-                gsap.to(`#v-${n}-temp`, { height: temp + '%', duration: 1.5 });
-                gsap.to(`#v-${n}-pwr`, { height: pwr + '%', duration: 1.5 });
+                gsap.to(`#v-${n}-load`, { height: load + '%', duration: 2 });
+                gsap.to(`#v-${n}-temp`, { height: temp + '%', duration: 2 });
+                gsap.to(`#v-${n}-pwr`, { height: pwr + '%', duration: 2 });
 
                 document.getElementById(`t-${n}-load`).innerText = load + '% LOAD';
                 document.getElementById(`t-${n}-temp`).innerText = temp + '°C TEMP';
@@ -458,8 +461,8 @@
             document.getElementById('active-model-display').innerText = `MODEL: ${meta.name}`;
             document.getElementById('inst-path').innerText = meta.path;
             document.getElementById('inst-id').innerText = Math.random().toString(16).substr(2, 8).toUpperCase();
-            chatHistory = [];
-            document.getElementById('md-container').innerHTML = `<div class="message-block text-zinc-500">// KERNEL REBOOT: MEMORY CLEARED</div>`;
+            document.getElementById('md-container').innerHTML = `<div class="message-block text-zinc-600">// KERNEL REBOOT: CONTEXT PURGED</div>`;
+            chatHistory = []; // Clear memory on model switch
         }
 
         function setStrat(type) {
@@ -477,39 +480,47 @@
             const container = document.getElementById('md-container');
             const stream = document.getElementById('response-stream');
             
-            // Auto open sidebar on mobile
+            // Auto switch to stream view on mobile
             if(window.innerWidth < 1024) {
-                document.getElementById('sidebar').classList.add('open');
-                document.getElementById('sidebar-overlay').classList.add('active');
+                toggleSidebar();
             }
 
             const messageId = "msg-" + Date.now();
             const messageDiv = document.createElement('div');
             messageDiv.className = "message-block";
-            messageDiv.innerHTML = `<div class="user-prompt">> ${prompt}</div><div id="${messageId}">...</div>`;
+            messageDiv.innerHTML = `<div class="user-prompt">> ${prompt}</div><div id="${messageId}" class="text-zinc-300">...</div>`;
             container.appendChild(messageDiv);
             
             const typeTarget = document.getElementById(messageId);
             inputField.value = '';
+            inputField.blur(); 
+
+            // Construct system instruction with memory
+            const memoryString = chatHistory.length > 0 ? 
+                ` Previous context: ${chatHistory.map(h => `User: ${h.u} | OpenLLM: ${h.r}`).join(' || ')}` : "";
+            const dynamicSystem = BASE_INSTRUCTION + memoryString;
 
             try {
-                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(SYSTEM_INSTRUCTION)}`);
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(dynamicSystem)}`);
                 const text = await response.text();
                 
+                typeTarget.innerHTML = "";
                 let i = 0;
-                let currentText = "";
                 const typing = setInterval(() => {
-                    currentText += text[i];
-                    typeTarget.innerHTML = marked.parse(currentText);
+                    typeTarget.innerHTML = marked.parse(text.substring(0, i + 1));
                     i++;
                     stream.scrollTop = stream.scrollHeight;
                     if(i >= text.length) {
                         clearInterval(typing);
                         isProcessing = false;
+                        
+                        // Save to memory (keep last 5 exchanges to avoid token overflow)
+                        chatHistory.push({u: prompt, r: text});
+                        if(chatHistory.length > 5) chatHistory.shift();
                     }
-                }, 5);
+                }, 10);
             } catch (err) {
-                typeTarget.innerHTML = "!! KERNEL_PANIC";
+                typeTarget.innerHTML = "!! CONNECTION_FAILURE";
                 isProcessing = false;
             }
         }
