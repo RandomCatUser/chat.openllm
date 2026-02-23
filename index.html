@@ -3,320 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenLLM | Home</title>
+    <title>OpenLLM | AI Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.321.0/lucide.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@400;700;900&display=swap');
-
-        :root {
-            --bg-deep: #050507;
-            --bg-panel: #0e0e12;
-            --border: #1c1c21;
-            --accent-blue: #3b82f6;
-            --accent-yellow: #FFC107;
-            --text-dim: #6b7280;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
         body {
-            background-color: var(--bg-deep);
-            color: #d1d1d6;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: none;
         }
 
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Background Grid */
-        .bg-grid {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-        }
-
-        /* Navigation */
-        .top-nav {
-            height: 56px;
-            background: rgba(8, 8, 10, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 32px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .btn-login {
-            background: #fff;
-            color: #000;
-            padding: 6px 16px;
-            font-weight: 800;
-            font-size: 11px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .btn-login:hover {
-            background: var(--accent-yellow);
-            box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
-        }
-
-        /* Hero UI */
-        .hero-title {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            line-height: 0.85;
-            letter-spacing: -0.04em;
-            color: #fff;
-        }
-
-        .glass-card {
-            background: rgba(14, 14, 18, 0.6);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            transition: transform 0.3s ease, border-color 0.3s;
-        }
-
-        .glass-card:hover {
-            border-color: var(--accent-blue);
-            transform: translateY(-4px);
-        }
-
-        /* Dev Profiles */
-        .dev-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid var(--border);
-            background: #1c1c21;
-        }
-
-        /* Dynamic Stats */
-        .stat-glow {
-            text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-        }
-
-        .orb {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            z-index: -1;
+        .custom-cursor {
             pointer-events: none;
+            position: fixed;
+            z-index: 9999;
+            transition: transform 0.1s ease-out;
+            color: #D4A373;
+            opacity: 0.8;
+            display: none;
         }
 
-        @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr; }
+        @media (min-width: 768px) {
+            .custom-cursor {
+                display: block;
+            }
+        }
+
+        .bg-latte { background-color: #FFFDF9; }
+        .text-coffee { color: #4A443F; }
+        .bg-coffee { background-color: #4A443F; }
+        .hover-bg-coffee-dark:hover { background-color: #36312D; }
+        .text-latte-muted { color: #8B837A; }
+        
+        .pill-shadow {
+            box-shadow: 0 4px 20px -5px rgba(212, 163, 115, 0.1);
+        }
+
+        .model-card.active {
+            background-color: white;
+            border-color: #D4A373;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(212, 163, 115, 0.15);
+            filter: grayscale(0);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        button, a {
+            cursor: none;
         }
     </style>
 </head>
-<body>
-    <div class="bg-grid"></div>
-    <div class="orb" style="top: 10%; right: -5%;"></div>
-    <div class="orb" style="bottom: 20%; left: -5%; background: radial-gradient(circle, rgba(255, 193, 7, 0.05) 0%, transparent 70%);"></div>
+<body class="bg-latte text-coffee selection:bg-[#FFD8D8]">
 
-    <nav class="top-nav">
-        <div class="flex items-center gap-3 mr-12">
-            <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0H100V100H80V20H0V0Z" fill="#FFC107"/>
-            </svg>
-            <span class="text-white font-black text-sm tracking-tighter">OPENLLM <span class="text-zinc-600 font-normal">v4.5</span></span>
-        </div>
-        <div class="hidden md:flex gap-8">
-            <a href="#about" class="mono text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest">Inference</a>
-            <a href="#developers" class="mono text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest">Architects</a>
-            <a href="#" class="mono text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest">Docs</a>
-        </div>
-        <div class="ml-auto flex items-center gap-6">
-            <div class="hidden sm:flex items-center gap-2">
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="mono text-[9px] text-zinc-500 uppercase">Nodes: 4,812 Online</span>
+    <!-- Custom Cursor -->
+    <div id="cursor" class="custom-cursor">
+        <i data-lucide="cat" fill="currentColor" size="24"></i>
+    </div>
+
+    <!-- Soft Background Decor -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#F5E6D3] blur-[100px] rounded-full opacity-60"></div>
+        <div class="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-[#E8F3E8] blur-[100px] rounded-full opacity-60"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="relative z-50 flex justify-between items-center px-6 py-8 max-w-6xl mx-auto">
+        <div class="flex items-center gap-2 group cursor-pointer">
+            <div class="w-10 h-10 bg-[#FFD8D8] rounded-2xl flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-sm">
+                <i data-lucide="cat" class="text-[#8B5E5E] w-6 h-6"></i>
             </div>
-            <a href="Openeria/Login.html" class="btn-login">Initialize Session</a>
+            <span class="text-xl font-bold tracking-tight">OpenLLM</span>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-latte-muted">
+            <a href="#models" class="hover:text-coffee transition-colors">Models</a>
+            <a href="#why" class="hover:text-coffee transition-colors">Why</a>
+            <a href="#lab" class="hover:text-coffee transition-colors">The Lab</a>
+            <a href="https://github.com/RandomCatUser/chat.openllm" target="_blank" class="bg-coffee text-white px-5 py-2.5 rounded-full hover-bg-coffee-dark transition-all flex items-center gap-2 shadow-sm">
+                <i data-lucide="github" class="w-4 h-4"></i> Star
+            </a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 pt-24 pb-40">
-        
-        <!-- Hero Section -->
-        <section id="about" class="grid lg:grid-cols-2 gap-20 items-center mb-40">
-            <div class="reveal">
-                <div class="inline-block px-3 py-1 border border-blue-500/30 rounded-full mb-6">
-                    <span class="mono text-[10px] text-blue-400 font-bold uppercase tracking-widest">Quantum Inference Mesh</span>
+    <!-- Hero -->
+    <section class="relative z-10 pt-16 pb-24 px-6 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E8F3E8] text-[#5E8B5E] text-xs font-bold mb-8 animate-bounce">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Intelligence, but make it cozy
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8">
+            Meet your local <br>
+            <span class="text-[#D4A373]">AI companion.</span>
+        </h1>
+        <p class="max-w-xl mx-auto text-lg text-latte-muted leading-relaxed mb-12">
+            OpenLLM is a gentle, high-performance way to use ai like a pro, just you and AI.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button onclick="window.location.href='openeria/login.html'" class="px-10 py-4 bg-coffee text-white font-bold rounded-2xl hover:scale-105 hover-bg-coffee-dark transition-all shadow-lg active:scale-95">
+                Get OpenLLM App
+            </button>
+            <a href="https://github.com/RandomCatUser/chat.openllm" target="_blank" class="px-10 py-4 bg-white border-2 border-[#F0EAD6] text-latte-muted font-bold rounded-2xl hover:bg-[#FAF9F6] hover:text-coffee transition-all active:scale-95">
+                View Source
+            </a>
+        </div>
+    </section>
+
+    <!-- Models Section -->
+    <section id="models" class="relative z-10 py-24 px-6 max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold mb-4">Choose your flavor</h2>
+            <p class="text-latte-muted">Four ways to experience localized intelligence.</p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="model-grid">
+            <!-- Models populated by JS -->
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section id="why" class="relative z-10 py-24 px-6 max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-12 text-center">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-[#F5E6D3] rounded-3xl flex items-center justify-center text-[#D4A373] mb-6 shadow-sm">
+                    <i data-lucide="cat" class="w-8 h-8"></i>
                 </div>
-                <h1 class="hero-title mb-8">THINKING<br>WITHOUT<br><span class="text-blue-500">LIMITS_</span></h1>
-                <p class="text-zinc-400 text-lg max-w-lg mb-10 leading-relaxed">
-                    A decentralized compute orchestration layer for ultra-low latency LLM serving. 
-                    Zero-trust architecture. Sovereign intelligence.
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-lg font-black transition-all flex items-center gap-3">
-                        START DEPLOYMENT <i class="fas fa-arrow-right text-xs"></i>
-                    </button>
-                    <button class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white px-8 py-4 rounded-lg font-black transition-all">
-                        EXPLORE REPO
-                    </button>
-                </div>
+                <h3 class="text-xl font-bold mb-3">100% OpenSource</h3>
+                <p class="text-latte-muted text-sm leading-relaxed">Code is fully open source and available on GitHub.</p>
             </div>
-
-            <!-- Dashboard Visual instead of Terminal -->
-            <div class="reveal relative">
-                <div class="glass-card p-6 shadow-2xl relative overflow-hidden">
-                    <div class="flex justify-between items-center mb-8">
-                        <div class="mono text-[10px] text-zinc-500 font-bold uppercase tracking-widest">System_Health</div>
-                        <div class="flex gap-1">
-                            <div class="w-2 h-2 rounded-full bg-zinc-800"></div>
-                            <div class="w-2 h-2 rounded-full bg-zinc-800"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
-                            <div class="mono text-[9px] text-zinc-500 mb-1">GLOBAL_THROUGHPUT</div>
-                            <div class="text-2xl font-black text-white stat-glow">1.4M<span class="text-blue-500 text-sm"> t/s</span></div>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
-                            <div class="mono text-[9px] text-zinc-500 mb-1">LATENCY_P99</div>
-                            <div class="text-2xl font-black text-white stat-glow">0.8<span class="text-blue-500 text-sm"> ms</span></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="h-24 w-full bg-zinc-900/50 rounded-lg relative overflow-hidden border border-zinc-800">
-                            <canvas id="statChart" class="w-full h-full"></canvas>
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex gap-2 items-center">
-                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                <span class="mono text-[9px] text-zinc-400">Node_Cluster_Alpha</span>
-                            </div>
-                            <span class="mono text-[9px] text-green-500">ACTIVE_LOAD: 42%</span>
-                        </div>
-                    </div>
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-[#E8F3E8] rounded-3xl flex items-center justify-center text-[#5E8B5E] mb-6 shadow-sm">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
                 </div>
-                <!-- Decorative element -->
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
+                <h3 class="text-xl font-bold mb-3">Privacy First</h3>
+                <p class="text-latte-muted text-sm leading-relaxed">Your secrets stay secrets. We don't log your prompts or your data.</p>
             </div>
-        </section>
-
-        <!-- Architect Section -->
-        <section id="developers" class="pt-20">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-4xl font-black text-white tracking-tighter mb-4">THE ARCHITECTS</h2>
-                <div class="h-1 w-20 bg-blue-600 mx-auto"></div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Dihan -->
-                <div class="glass-card p-8 flex items-center gap-6 reveal">
-                    <img src="peoples/p2.png" alt="Dihan" class="dev-img" onerror="this.src='https://avatars.githubusercontent.com/u/192176237?v=4'">
-                    <div>
-                        <h4 class="text-xl font-black text-white tracking-tight">Dihan Ramanayaka</h4>
-                        <p class="mono text-[10px] text-blue-500 font-bold uppercase mb-4">Principal Systems Lead</p>
-                        <div class="flex gap-4">
-                            <a href="#" class="text-zinc-500 hover:text-white transition"><i class="fab fa-github"></i></a>
-                            <a href="#" class="text-zinc-500 hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                        </div>
-                    </div>
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-[#FFD8D8] rounded-3xl flex items-center justify-center text-[#8B5E5E] mb-6 shadow-sm">
+                    <i data-lucide="heart" class="w-8 h-8"></i>
                 </div>
-
-                <!-- Su ZhyZai -->
-                <div class="glass-card p-8 flex items-center gap-6 reveal">
-                    <img src="Openeria/assets/p1.jpg" alt="Su" class="dev-img" onerror="this.src=''">
-                    <div>
-                        <h4 class="text-xl font-black text-white tracking-tight">Su ZhyZai</h4>
-                        <p class="mono text-[10px] text-yellow-500 font-bold uppercase mb-4">Neural Architecture</p>
-                        <div class="flex gap-4">
-                            <a href="#" class="text-zinc-500 hover:text-white transition"><i class="fab fa-github"></i></a>
-                            <a href="#" class="text-zinc-500 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="border-t border-zinc-900 py-12 px-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="mono text-[10px] text-zinc-700 tracking-[0.2em]">© 2026 RANDOMCATSLAB_INDUSTRIES</div>
-            <div class="flex gap-8 mono text-[9px] font-bold text-zinc-500 uppercase">
-                <a href="#" class="hover:text-white">Whitepaper</a>
-                <a href="#" class="hover:text-white">Ecosystem</a>
-                <a href="#" class="hover:text-white">Security</a>
+                <h3 class="text-xl font-bold mb-3">Community Loved</h3>
+                <p class="text-latte-muted text-sm leading-relaxed">Built with love by people who care about an open AI future.</p>
             </div>
         </div>
+    </section>
+
+    <!-- Lab Section -->
+    <section id="lab" class="py-32 px-6">
+        <div class="max-w-5xl mx-auto bg-white border border-[#F0EAD6] rounded-[3rem] p-8 md:p-16 relative overflow-hidden shadow-sm">
+            <div class="absolute top-0 right-0 p-12 text-[#F5E6D3] opacity-20 md:opacity-100 transform rotate-12">
+                <i data-lucide="cat" class="w-32 h-32"></i>
+            </div>
+            <div class="relative z-10">
+                <div class="inline-block px-4 py-1 rounded-full bg-[#FAF9F6] text-[#D4A373] text-xs font-bold mb-6">
+                    MADE BY RANDOMCATSLAB
+                </div>
+                <h2 class="text-4xl font-bold mb-6">Curiosity built the cat.</h2>
+                <p class="text-lg text-latte-muted leading-relaxed mb-8 max-w-2xl">
+                    RandomCatsLab is a tiny collective of creators who love two things: elegant software and happy cats. 
+                    We build software that feels like a warm cup of coffee on a rainy day.
+                </p>
+                <div class="grid md:grid-cols-2 gap-12 mb-10">
+                    <div>
+                        <h4 class="text-xs font-black uppercase text-[#D4A373] mb-6 tracking-widest">The Development Team</h4>
+                        <div class="space-y-6">
+                            <div class="group flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#FFD8D8] overflow-hidden border-2 border-white shadow-sm">
+                                    <img src="Openeria/assets/p2.jpg" alt="p1.png" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="flex items-center gap-2 text-sm font-bold text-coffee">
+                                        Dihan Ramanayaka
+                                    </p>
+                                    <p class="text-xs text-latte-muted mt-1 leading-relaxed">Chief Architecture & Kibble Management. Optimizing neural nets by day, chasing laser pointers by night.</p>
+                                </div>
+                            </div>
+                            <div class="group flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#E8F3E8] overflow-hidden border-2 border-white shadow-sm">
+                                    <img src="Openeria/assets/p1.jpg" alt="p2.png" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="flex items-center gap-2 text-sm font-bold text-coffee">
+                                        Su Zhyzai
+                                    </p>
+                                    <p class="text-xs text-latte-muted mt-1 leading-relaxed">Quantization Specialist. Can fit a 70B model into a toaster if given enough caffeine and motivation.</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center gap-6">
+                        <div class="bg-[#FAF9F6] p-6 rounded-3xl border border-[#F0EAD6]">
+                            <p class="text-xs font-bold text-coffee mb-2 italic">"We don't build software for corporations. We build it for humans (and their feline overseers)."</p>
+                            <p class="text-[10px] text-[#D4A373] font-bold uppercase tracking-widest">— The Lab Manifesto</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex -space-x-3">
+                                <div class="w-12 h-12 rounded-full border-2 border-white bg-[#F5E6D3] flex items-center justify-center overflow-hidden shadow-sm">
+                                    <img src="Openeria/assets/p2.jpg" class="w-full h-full" alt="Dev 1">
+                                </div>
+                                <div class="w-12 h-12 rounded-full border-2 border-white bg-[#E8F3E8] flex items-center justify-center overflow-hidden shadow-sm">
+                                    <img src="Openeria/assets/p1.jpg" class="w-full h-full" alt="Dev 2">
+                                </div>
+                            
+                            </div>
+                            <span class="text-xs font-medium text-latte-muted leading-tight">2 Humans,<br>2 Cats, 1 Vision</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 px-6 text-center border-t border-[#F0EAD6]">
+        <div class="flex justify-center gap-6 mb-8 text-latte-muted">
+            <a href="https://github.com/RandomCatUser/chat.openllm" class="hover:text-coffee transition-colors"><i data-lucide="github"></i></a>
+            <a href="#" class="hover:text-coffee transition-colors"><i data-lucide="star"></i></a>
+            <a href="#" class="hover:text-coffee transition-colors"><i data-lucide="coffee"></i></a>
+        </div>
+        <p class="text-sm text-latte-muted">
+            © 2024 RandomCatsLab. No cookies were used in the making of this site.
+        </p>
     </footer>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        gsap.registerPlugin(ScrollTrigger);
+        lucide.createIcons();
 
-        // Animations
-        window.addEventListener('load', () => {
-            gsap.utils.toArray('.reveal').forEach((el) => {
-                gsap.from(el, {
-                    scrollTrigger: {
-                        trigger: el,
-                        start: "top 90%",
-                    },
-                    y: 40,
-                    opacity: 0,
-                    duration: 1.2,
-                    ease: "power4.out"
-                });
-            });
-
-            // Mock Chart Animation
-            const canvas = document.getElementById('statChart');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                canvas.width = 400;
-                canvas.height = 100;
-
-                function draw() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.beginPath();
-                    ctx.moveTo(0, 80);
-                    ctx.strokeStyle = '#3b82f6';
-                    ctx.lineWidth = 2;
-                    
-                    for(let i = 0; i < canvas.width; i+=10) {
-                        const y = 50 + Math.sin(Date.now() * 0.005 + i * 0.02) * 20 + Math.random() * 5;
-                        ctx.lineTo(i, y);
-                    }
-                    ctx.stroke();
-                    requestAnimationFrame(draw);
-                }
-                draw();
-            }
-        });
-
-        // Interactive orbs
+        const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
-            const orbs = document.querySelectorAll('.orb');
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
-            
-            orbs.forEach(orb => {
-                gsap.to(orb, {
-                    x: (x - 0.5) * 50,
-                    y: (y - 0.5) * 50,
-                    duration: 2,
-                    ease: "power2.out"
-                });
-            });
+            cursor.style.left = (e.clientX - 12) + 'px';
+            cursor.style.top = (e.clientY - 12) + 'px';
         });
+
+        const models = [
+            { name: 'OpenLLM 4.1 Cute', badge: 'Default', trait: 'Warm & Friendly', desc: 'The perfect companion for daily chats.', icon: 'smile' },
+            { name: 'Quick', badge: 'Fastest', trait: 'Lightweight', desc: 'Responds before you finish typing.', icon: 'zap' },
+            { name: 'Pro', badge: 'Balanced', trait: 'Reliable', desc: 'Sophisticated logic for complex tasks.', icon: 'shield-check' },
+            { name: 'Advance', badge: 'Power', trait: 'Brilliant', desc: 'Our most capable brain for deep thinking.', icon: 'crown' },
+        ];
+
+        const modelGrid = document.getElementById('model-grid');
+
+        function renderModels(activeIndex = 0) {
+            modelGrid.innerHTML = models.map((m, index) => `
+                <div class="model-card p-6 rounded-[2.5rem] border-2 transition-all cursor-pointer hover:shadow-md bg-white/50 border-[#F0EAD6] grayscale-[0.5] ${index === activeIndex ? 'active' : ''}" 
+                     onclick="renderModels(${index})">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 ${index === activeIndex ? 'bg-[#FFD8D8] text-[#8B5E5E]' : 'bg-[#FAF9F6] text-[#8B837A]'}">
+                        <i data-lucide="${m.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div class="inline-block px-2 py-0.5 rounded-lg bg-[#FAF9F6] text-[#D4A373] text-[10px] font-black uppercase mb-3">
+                        ${m.badge}
+                    </div>
+                    <h3 class="font-bold text-lg mb-1 text-coffee">${m.name}</h3>
+                    <p class="text-xs font-bold text-[#5E8B5E] mb-4 italic">${m.trait}</p>
+                    <p class="text-latte-muted text-sm leading-relaxed">${m.desc}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        renderModels();
     </script>
 </body>
 </html>
