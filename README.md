@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:ff9a9e,100:fad0c4&height=220&section=header&text=OpenLLM-Chat&fontSize=42&fontColor=ffffff&animation=fadeIn" />
+  <img src="https://socialify.git.ci/RandomCatUser/chat.openllm/image?font=JetBrains+Mono&forks=1&issues=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&theme=Auto" >
 </p>
 
 <p align="center">
