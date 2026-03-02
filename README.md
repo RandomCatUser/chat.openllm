@@ -27,7 +27,7 @@ Perfect for experimenting with AI-style interfaces without heavy backend setup.
 ## Open Source
 
 <p align="center">
-  <img src="https://media.giphy.com/media/QTfX9Ejfra3ZmNxh6B/giphy.gif" width="300">
+  <img src="Openeria/assets/OpenLLM.mp4" width="300">
 </p>
 
 Free for everyone Meow!
