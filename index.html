@@ -3,345 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenLLM | Super Cute AI</title>
+    <title>Documentation | chat.openllm</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.321.0/lucide.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        :root {
-            --latte: #FFFDF9;
-            --coffee: #4A443F;
-            --marshmallow: #FFFFFF;
-            --strawberry: #FFD8D8;
-            --matcha: #E8F3E8;
-            --honey: #FFB347;
-        }
-
         body {
-            font-family: 'Fredoka', sans-serif;
-            cursor: none;
-            overflow-x: hidden;
-            background-color: var(--latte);
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+            scroll-behavior: smooth;
         }
 
-        .custom-cursor {
-            pointer-events: none;
-            position: fixed;
-            z-index: 10000;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: var(--coffee);
-            display: none;
+        .sidebar {
+            width: 280px;
+            background-color: #fcfcfc;
+            border-right: 1px solid #f3f4f6;
         }
 
-        @media (min-width: 768px) {
-            .custom-cursor { display: block; }
+        .nav-link {
+            display: block;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
         }
 
-        .squishy {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .nav-link:hover {
+            color: #111827;
+            background-color: #f1f5f9;
         }
 
-        .squishy:hover {
-            transform: scale(1.05) translateY(-2px);
+        .content-area {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
         }
 
-        .squishy:active {
-            transform: scale(0.95);
+        pre {
+            background-color: #111827;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: #e5e7eb;
+            font-family: 'ui-monospace', monospace;
+            font-size: 0.875rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            border: 1px solid #1f2937;
         }
 
-        .floating-island {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border: 3px solid white;
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
+        .data-notice {
+            background: linear-gradient(to right, #fffaf0, #fff);
+            border: 1px solid #feebc8;
+            border-left: 4px solid #f6ad55;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
         }
 
-        .model-card {
-            border-radius: 3rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 4px solid transparent;
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-top: 4rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .model-card.active {
-            background: white;
-            border-color: var(--strawberry);
-            transform: scale(1.03);
-            box-shadow: 0 25px 50px -12px rgba(255, 216, 216, 0.5);
+        h2::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #f1f5f9;
+            margin-left: 1rem;
         }
 
-        @keyframes drift {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(15px, -15px) rotate(2deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .cloud {
-            animation: drift 6s ease-in-out infinite;
-        }
-
-        .text-gradient {
-            background: linear-gradient(to right, #4A443F, #D4A373);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Custom Scrollbar for the cute look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--latte); }
-        ::-webkit-scrollbar-thumb { 
-            background: var(--strawberry); 
-            border-radius: 10px;
-            border: 2px solid var(--latte);
-        }
+        .badge-primary { background: #6366f1; color: #ffffff; }
+        .badge-outline { border: 1px solid #e2e8f0; color: #64748b; }
+        .badge-soft-orange { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
         
-        button, a { cursor: none; }
+        .hero-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .btn-black {
+            background: #111827;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-black:hover {
+            transform: translateY(-1px);
+            background: #000;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .content-area { padding: 3rem 1.5rem; }
+        }
     </style>
 </head>
-<body class="selection:bg-[#FFD8D8]">
+<body class="flex">
 
-    <!-- Custom Cursor -->
-    <div id="cursor" class="custom-cursor">
-        <div class="relative flex items-center justify-center">
-            <i data-lucide="paw-print" fill="currentColor" size="24"></i>
-        </div>
-    </div>
-
-    <!-- Background Decoration -->
-    <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div class="absolute top-20 left-[10%] cloud text-[#FFD8D8]/30"><i data-lucide="cloud" size="120"></i></div>
-        <div class="absolute bottom-40 right-[15%] cloud text-[#E8F3E8]/40" style="animation-delay: -2s;"><i data-lucide="cloud" size="180"></i></div>
-        <div class="absolute top-1/2 left-1/4 w-[40vw] h-[40vw] bg-[#F5E6D3] blur-[150px] rounded-full opacity-30"></div>
-    </div>
-
-    <!-- Navigation Island -->
-    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-4xl">
-        <div class="floating-island rounded-[2.5rem] px-8 py-3 flex justify-between items-center">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar h-screen sticky top-0 overflow-y-auto hidden lg:block p-8">
+        <div class="mb-12 px-2">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#4A443F] rounded-2xl flex items-center justify-center transform hover:rotate-12 transition-all">
-                    <i data-lucide="cat" class="text-white w-6 h-6"></i>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">O</div>
+                <span class="font-extrabold text-lg tracking-tight">chat.openllm</span>
+            </div>
+        </div>
+
+        <nav class="space-y-8">
+            <section>
+                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Product</p>
+                <div class="space-y-1">
+                    <a href="#intro" class="nav-link">Overview</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#setup" class="nav-link">Getting Started</a>
                 </div>
-                <span class="text-2xl font-bold tracking-tight text-[#4A443F]">openLLM</span>
-            </div>
+            </section>
             
-            <div class="hidden md:flex items-center gap-6">
-                <a href="#models" class="font-semibold text-[#8B837A] hover:text-[#4A443F] transition-colors">Models</a>
-                <a href="#lab" class="font-semibold text-[#8B837A] hover:text-[#4A443F] transition-colors">The Lab</a>
-                <button onclick="openSourceModal()" class="w-10 h-10 rounded-full bg-[#FAF9F6] flex items-center justify-center hover:bg-white border border-[#F0EAD6] transition-all squishy">
-                    <i data-lucide="github" class="w-5 h-5"></i>
-                </button>
-                <button onclick="openTryModal()" class="bg-[#4A443F] text-white px-7 py-2.5 rounded-full font-bold shadow-lg shadow-black/10 transition-all squishy">
-                    Get Started
-                </button>
-            </div>
-        </div>
-    </nav>
+            <section>
+                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Legal</p>
+                <div class="space-y-1">
+                    <a href="#privacy" class="nav-link">Privacy & Data</a>
+                    <a href="#license" class="nav-link">License</a>
+                </div>
+            </section>
+        </nav>
 
-    <!-- Hero Section -->
-    <section class="pt-48 pb-20 px-6 text-center">
-        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white shadow-sm text-[#5E8B5E] text-sm font-bold mb-10 border-2 border-[#E8F3E8] squishy">
-            <i data-lucide="sparkles" class="w-4 h-4 text-[#D4A373]"></i>
-            Your AI Bestie is Online
+        <div class="mt-24 px-3">
+            <a href="https://github.com/RandomCatUser/chat.openllm" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-widest">
+                GitHub Repository
+            </a>
         </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1">
         
-        <h1 class="text-6xl md:text-9xl font-bold tracking-tight mb-10 leading-[0.85] text-[#4A443F]">
-            Cozy Code. <br>
-            <span class="text-[#D4A373] italic">Warm Vibes.</span>
-        </h1>
-        
-        <p class="max-w-2xl mx-auto text-xl md:text-2xl text-[#8B837A] font-medium leading-relaxed mb-14">
-            The world's first AI interface that actually wants to be your friend. Simple, private, and extremely adorable.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button onclick="openTryModal()" class="px-10 py-5 bg-[#D4A373] text-white text-xl font-bold rounded-[2rem] shadow-xl hover:shadow-[#D4A373]/20 transition-all squishy flex items-center gap-3">
-                Try the App <i data-lucide="arrow-right-circle" class="w-6 h-6"></i>
-            </button>
-            <button onclick="openSourceModal()" class="px-10 py-5 bg-white border-4 border-[#F0EAD6] text-[#8B837A] text-xl font-bold rounded-[2rem] hover:bg-[#FAF9F6] transition-all squishy">
-                Docs
-            </button>
-        </div>
-    </section>
-
-    <!-- Models: Bubble Style -->
-    <section id="models" class="py-24 px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-20">
-            <h2 class="text-5xl font-bold mb-4 text-[#4A443F]">Meet the Gang</h2>
-            <p class="text-lg text-[#8B837A] font-medium">Each model has a different flavor of intelligence.</p>
-        </div>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-10" id="model-grid">
-            <!-- Models populated by JS -->
-        </div>
-    </section>
-
-    <!-- The Lab / Team -->
-    <section id="lab" class="py-24 px-6">
-        <div class="max-w-6xl mx-auto bg-white rounded-[4rem] p-12 md:p-20 relative overflow-hidden border-4 border-[#F0EAD6] shadow-2xl shadow-black/[0.02]">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="relative">
-                    <div class="absolute -top-10 -left-10 w-32 h-32 bg-[#FFD8D8] rounded-full blur-3xl opacity-50"></div>
-                    <div class="inline-block px-5 py-2 rounded-full bg-[#E8F3E8] text-[#5E8B5E] text-xs font-bold uppercase tracking-widest mb-8">
-                        The Creators
-                    </div>
-                    <h2 class="text-5xl font-bold mb-8 text-[#4A443F] leading-tight">Small Team. <br>Big <span class="text-[#FFB347]">Hearts.</span></h2>
-                    <p class="text-lg text-[#8B837A] font-medium leading-relaxed mb-12">
-                        RandomCatsLab is just a bunch of people who love cozy aesthetics and fast inference. We're building the future of local AI, one paw-step at a time.
-                    </p>
-                    
-                    <div class="grid sm:grid-cols-2 gap-6">
-                        <div class="p-6 bg-[#FAF9F6] rounded-[2rem] border-2 border-white squishy">
-                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm text-[#4A443F]">
-                                <i data-lucide="code" class="w-6 h-6"></i>
-                            </div>
-                            <h4 class="font-bold text-lg">Dihan R.</h4>
-                            <p class="text-sm text-[#8B837A]">Logic King</p>
-                        </div>
-                        <div class="p-6 bg-[#FAF9F6] rounded-[2rem] border-2 border-white squishy">
-                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm text-[#D4A373]">
-                                <i data-lucide="palette" class="w-6 h-6"></i>
-                            </div>
-                            <h4 class="font-bold text-lg">Su Z.</h4>
-                            <p class="text-sm text-[#8B837A]">Vibe Master</p>
-                        </div>
-                    </div>
+        <!-- Hero Section -->
+        <header id="intro" class="hero-gradient px-6 py-16 md:py-24 border-b border-gray-100">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <span class="badge badge-primary">Open Source</span>
+                    <span class="badge badge-outline">Meow!</span>
+                    <span class="badge badge-outline">No Install</span>
                 </div>
                 
-                <div class="relative group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-[#FFD8D8] to-[#D4A373] rounded-[3.5rem] rotate-3 group-hover:rotate-1 transition-transform"></div>
-                    <div class="relative bg-[#4A443F] text-white p-12 rounded-[3.5rem] shadow-xl">
-                        <i data-lucide="heart" class="w-12 h-12 text-[#FFD8D8] mb-8 animate-bounce"></i>
-                        <h3 class="text-3xl font-bold mb-6">Our Promise</h3>
-                        <p class="text-xl text-white/80 leading-relaxed font-medium">
-                            "We will never track your data, never sell your chats, and always keep the interface looking absolutely delicious."
-                        </p>
-                    </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight text-gray-900 leading-tight">
+                    Soft Introduction
+                </h1>
+                
+                <p class="text-xl text-slate-600 leading-relaxed mb-10">
+                    <strong>chat.openllm</strong> is an open-source LLM experience built with Pollination, designed to simulate and explore a cluster-like system directly inside the browser.
+                </p>
+
+                <div class="flex items-center gap-6">
+                    <a href="menu.html" class="btn-black">
+                        Try Now <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                    <span class="text-sm font-medium text-slate-400 italic">Lightweight. Interactive. Customizable.</span>
                 </div>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <!-- Footer -->
-    <footer class="py-24 px-6">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="w-20 h-20 bg-[#4A443F] rounded-[2rem] flex items-center justify-center mx-auto mb-10 rotate-3 hover:rotate-0 transition-transform shadow-xl">
-                <i data-lucide="cat" class="text-white w-10 h-10"></i>
-            </div>
-            <div class="flex justify-center gap-6 mb-12">
-                <a href="#" class="w-14 h-14 bg-white rounded-[1.5rem] shadow-sm flex items-center justify-center text-[#8B837A] hover:text-[#4A443F] hover:shadow-md transition-all squishy border border-[#F0EAD6]">
-                    <i data-lucide="github"></i>
-                </a>
-                <a href="#" class="w-14 h-14 bg-white rounded-[1.5rem] shadow-sm flex items-center justify-center text-[#8B837A] hover:text-[#4A443F] hover:shadow-md transition-all squishy border border-[#F0EAD6]">
-                    <i data-lucide="twitter"></i>
-                </a>
-            </div>
-            <p class="text-sm font-bold text-[#8B837A] uppercase tracking-widest">
-                &copy; 2024 RandomCatsLab &bull; Stay Cozy
-            </p>
-        </div>
-    </footer>
-
-    <!-- Try Modal -->
-    <div id="try-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
-        <div class="absolute inset-0 bg-[#4A443F]/40 backdrop-blur-xl transition-all" onclick="closeTryModal()"></div>
-        <div class="bg-white max-w-lg w-full rounded-[4rem] p-12 relative z-10 shadow-3xl border-4 border-[#D4A373] modal-content">
-            <button onclick="closeTryModal()" class="absolute top-8 right-8 w-12 h-12 bg-[#FAF9F6] rounded-full flex items-center justify-center hover:bg-white transition-all squishy border border-[#F0EAD6]">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            <div class="text-center">
-                <div class="w-24 h-24 bg-[#FFD8D8] rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 rotate-6">
-                    <i data-lucide="rocket" class="text-[#8B5E5E] w-12 h-12"></i>
+        <div class="content-area">
+            
+            <!-- Features Section -->
+            <section id="features">
+                <h2>Features</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="badge badge-outline mb-3">Core</span>
+                        <h3 class="font-bold text-lg mb-2">Browser Simulation</h3>
+                        <p class="text-sm text-slate-600">Run cluster logic entirely on the client side without backend overhead.</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="badge badge-outline mb-3">Architecture</span>
+                        <h3 class="font-bold text-lg mb-2">Modular Structure</h3>
+                        <p class="text-sm text-slate-600">Decoupled files for easier maintenance and community forking.</p>
+                    </div>
                 </div>
-                <h3 class="text-4xl font-bold mb-4 text-[#4A443F]">Launch Time!</h3>
-                <p class="text-[#8B837A] mb-10 text-lg">Pick your playground and let's get chatting.</p>
-                <div class="grid gap-5">
-                    <button class="w-full py-5 bg-[#4A443F] text-white text-xl font-bold rounded-[2rem] shadow-lg hover:bg-black transition-all squishy flex items-center justify-center gap-3">
-                        <i data-lucide="sparkles" class="w-6 h-6"></i> Open Main Chat
-                    </button>
-                    <button class="w-full py-5 bg-[#FAF9F6] text-[#4A443F] text-xl font-bold rounded-[2rem] border-2 border-[#F0EAD6] hover:bg-white transition-all squishy">
-                        Dev Lab
-                    </button>
+                <div class="mt-8 space-y-4 text-slate-700">
+                    <p>• Simple navigation system for cluster nodes.</p>
+                    <p>• Minimal CSS and Vanilla JS for easy customization.</p>
+                    <p>• Built to be improved by the community.</p>
                 </div>
-            </div>
-        </div>
-    </div>
+            </section>
 
-    <!-- Source Modal -->
-    <div id="source-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
-        <div class="absolute inset-0 bg-[#4A443F]/40 backdrop-blur-xl transition-all" onclick="closeSourceModal()"></div>
-        <div class="bg-white max-w-md w-full rounded-[4rem] p-10 relative z-10 border-4 border-[#5E8B5E]">
-            <h3 class="text-3xl font-bold mb-8">Resources</h3>
-            <div class="space-y-4">
-                <a href="#" class="flex items-center gap-4 p-5 bg-[#FAF9F6] rounded-[2rem] hover:bg-white transition-all squishy border border-transparent hover:border-[#E8F3E8]">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                        <i data-lucide="github"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold">Main Repo</p>
-                        <p class="text-xs text-[#8B837A]">Frontend & UI</p>
-                    </div>
-                </a>
-                <a href="#" class="flex items-center gap-4 p-5 bg-[#FAF9F6] rounded-[2rem] hover:bg-white transition-all squishy border border-transparent hover:border-[#E8F3E8]">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                        <i data-lucide="terminal"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold">Model Weights</p>
-                        <p class="text-xs text-[#8B837A]">On HuggingFace</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        lucide.createIcons();
-
-        // Enhanced Cursor
-        const cursor = document.getElementById('cursor');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = (e.clientX - 12) + 'px';
-            cursor.style.top = (e.clientY - 12) + 'px';
-        });
-
-        document.querySelectorAll('button, a').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(2)');
-            el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
-        });
-
-        // Modals
-        function openTryModal() { document.getElementById('try-modal').classList.remove('hidden'); }
-        function closeTryModal() { document.getElementById('try-modal').classList.add('hidden'); }
-        function openSourceModal() { document.getElementById('source-modal').classList.remove('hidden'); }
-        function closeSourceModal() { document.getElementById('source-modal').classList.add('hidden'); }
-
-        // Models Data
-        const models = [
-            { name: 'OpenLLM Cute', trait: 'Warm', icon: 'smile', color: '#FFD8D8', text: '#8B5E5E' },
-            { name: 'OpenLLM Fast', trait: 'Zoomy', icon: 'zap', color: '#E8F3E8', text: '#5E8B5E' },
-            { name: 'OpenLLM Pro', trait: 'Nerdy', icon: 'glasses', color: '#F5E6D3', text: '#D4A373' },
-            { name: 'OpenLLM Ultra', trait: 'Godly', icon: 'star', color: '#4A443F', text: '#FFFFFF' },
-        ];
-
-        function renderModels(activeIndex = 0) {
-            const grid = document.getElementById('model-grid');
-            grid.innerHTML = models.map((m, i) => `
-                <div class="model-card group bg-white p-10 cursor-pointer shadow-lg hover:shadow-2xl flex flex-col items-center text-center transition-all ${i === activeIndex ? 'active' : ''}"
-                     onclick="renderModels(${i})">
-                    <div class="w-20 h-20 rounded-[2rem] flex items-center justify-center mb-8 shadow-inner transition-all group-hover:rotate-12" style="background: ${m.color}; color: ${m.text}">
-                        <i data-lucide="${m.icon}" size="36"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-2 text-[#4A443F]">${m.name}</h3>
-                    <p class="text-sm font-bold uppercase tracking-widest text-[#8B837A]">${m.trait} Personality</p>
-                    <div class="mt-6 w-12 h-1.5 rounded-full bg-[#F0EAD6]"></div>
+            <!-- Getting Started Section -->
+            <section id="setup">
+                <h2>Getting Started</h2>
+                <p class="text-slate-600 mb-6">Clone the project and explore locally with zero installation required.</p>
+                
+                <div class="space-y-4">
+                    <p class="text-sm font-bold text-slate-800">1. Clone the repository</p>
+                    <pre><code>git clone https://github.com/RandomCatUser/chat.openllm</code></pre>
+                    
+                    <p class="text-sm font-bold text-slate-800 mt-6">2. Navigate and Run</p>
+                    <p class="text-slate-600 text-sm mb-2">Open <code>index.html</code> in any modern browser.</p>
+                    <pre><code>cd chat.openllm</code></pre>
                 </div>
-            `).join('');
-            lucide.createIcons();
-        }
+            </section>
 
-        renderModels();
-    </script>
+            <!-- Privacy Section -->
+            <section id="privacy">
+                <h2>Privacy & Data Flow</h2>
+                <div class="data-notice">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="badge badge-soft-orange">Data Notice</span>
+                    </div>
+                    <p class="text-slate-800 text-sm leading-relaxed font-medium">
+                        To provide advanced AI simulation features, <strong>this application shares your data with Pollinations</strong>. 
+                        Your prompts and interaction data are processed by the Pollinations infrastructure to generate real-time cluster responses.
+                    </p>
+                </div>
+                <p class="mt-4 text-xs text-slate-400 italic">
+                    We do not store your personal data on local servers. Processing happens in real-time.
+                </p>
+            </section>
+
+            <!-- Project Structure -->
+            <section id="structure">
+                <h2>Project Structure</h2>
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-3 font-bold text-slate-700 uppercase tracking-widest text-[10px]">File Name</th>
+                                <th class="px-6 py-3 font-bold text-slate-700 uppercase tracking-widest text-[10px]">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-indigo-600">index.html</td>
+                                <td class="px-6 py-4">Documentation & Landing Page</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-indigo-600">menu.html</td>
+                                <td class="px-6 py-4">Main App Navigation Interface</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-indigo-600">openeria.html</td>
+                                <td class="px-6 py-4">Core Orchestration Logic</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- License Section -->
+            <section id="license">
+                <h2>License</h2>
+                <p class="text-slate-600">
+                    Distributed under the <strong>Apache License 2.0</strong>. See <code>LICENSE</code> for more details.
+                </p>
+            </section>
+
+            <!-- Footer -->
+            <footer class="mt-32 pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 pb-12">
+                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">&copy; 2024 chat.openllm</p>
+                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Built with ❤️ by RandomCatUser</p>
+                <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Powered by Pollinations</p>
+            </footer>
+        </div>
+    </main>
+
 </body>
 </html>
