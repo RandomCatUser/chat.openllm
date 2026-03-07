@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OpenLLM - Intelligence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fcfcfc;
+            --card-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 2px 10px -2px rgba(0,0,0,0.04);
+            --input-bg: rgba(255, 255, 255, 0.7);
+            --accent: #000000;
+            --panel-bg: rgba(255, 255, 255, 0.98);
+            --glass: rgba(255, 255, 255, 0.75);
+            --model-color: #888;
+            --nav-border: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme='dark'] {
+            --bg: #0a0a0a;
+            --card-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            --input-bg: rgba(20, 20, 20, 0.6);
+            --accent: #ffffff;
+            --panel-bg: rgba(20, 20, 20, 0.98);
+            --glass: rgba(10, 10, 10, 0.75);
+            --nav-border: rgba(255, 255, 255, 0.1);
+            color: #eee;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--accent);
+            font-family: 'Inter', -apple-system, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Apple Styled Persistent Quick Bar */
+        .chat-header-glass {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 320px;
+            height: 48px;
+            background: var(--glass);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 140;
+            display: flex;
+            border: 1px solid var(--nav-border);
+            border-radius: 24px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+        }
+
+        .nav-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.2); border-radius: 10px; }
+
+        #auth-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-grid {
+            position: absolute; inset: 0;
+            background-image: radial-gradient(var(--accent) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.03;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .brand-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            margin-bottom: 40px;
+            color: var(--accent);
+        }
+
+        .search-box-wrapper {
+            width: 100%;
+            max-width: 650px;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+        }
+
+        .search-box {
+            background: var(--input-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 8px 8px 8px 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(128,128,128,0.15);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .search-box:focus-within {
+            border-color: rgba(128,128,128,0.4);
+            background: var(--panel-bg);
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: var(--accent);
+            width: 100%;
+            padding: 12px 0;
+        }
+
+        .send-btn {
+            background: var(--accent);
+            color: var(--bg);
+            width: 44px;
+            height: 44px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .card-stack {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            perspective: 1200px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .floating-card {
+            background: var(--input-bg);
+            border-radius: 16px;
+            padding: 18px;
+            width: 190px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(128,128,128,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .card-white { transform: rotate(-3deg); }
+            .card-yellow { background: #fff9db; transform: translateY(-10px) rotate(2deg); color: #1a1a1a; }
+            [data-theme='dark'] .card-yellow { background: #4a452a; color: #fff; }
+            .card-dark { background: #1a1a1a; color: white; transform: rotate(-1deg); }
+            .floating-card:hover { transform: translateY(-15px) rotate(0deg) scale(1.05); z-index: 110; }
+        }
+
+        .chat-main {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 100px;
+            overflow-y: scroll;
+            padding: 100px 0 40px 0;
+            display: none;
+            opacity: 0;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+
+        .msg-block {
+            max-width: 720px;
+            margin: 0 auto 48px auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        .status-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #888; transition: all 0.3s; opacity: 0.3; }
+        .dot.active { background: var(--model-color, #000); opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        .settings-panel {
+            position: fixed; top: 0; right: 0; bottom: 0; width: 340px;
+            background: var(--panel-bg); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(128,128,128,0.1);
+            padding: 40px 25px; z-index: 200; display: none;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .setting-row { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .setting-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #888;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-switch {
+            width: 32px; height: 18px; background: #ddd; border-radius: 20px;
+            position: relative; cursor: pointer; transition: 0.3s;
+        }
+        .toggle-switch.on { background: #000; }
+        [data-theme='dark'] .toggle-switch.on { background: #fff; }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 12px; height: 12px; background: white; border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch.on::after { left: 17px; }
+
+        .active-pill { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+        
+        .stat-card { background: rgba(128,128,128,0.05); padding: 12px; border-radius: 12px; }
+
+        .thinking-orb {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            justify-content: center;
+        }
+        .thinking-orb::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--model-color);
+            animation: thinkingPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes thinkingPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .model-pill {
+            padding: 8px 4px;
+            font-size: 8px;
+            font-weight: 900;
+            border-radius: 8px;
+            border: 1px solid rgba(128,128,128,0.2);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #888;
+        }
+        .model-pill.active { border-color: var(--accent); color: var(--accent); background: rgba(128,128,128,0.05); }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: -0.05em;
+        }
+
+        .nav-action {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+        .msg-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+        .copy-icon {
+            font-size: 11px;
+            cursor: pointer;
+            user-select: none;
+            padding: 1px 4px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .copy-icon:hover {
+            opacity: 0.8;
+        }
+        .typing-cursor {
+            display: none;
+        }
+
+        .sender-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+        .msg-content {
+            line-height: 1.6;
+            word-spacing: 0.05em;
+            letter-spacing: 0.005em;
+            font-size: 14px;
+        }
+        .msg-content p {
+            margin-bottom: 1em;
+        }
+        .msg-content p:last-child {
+            margin-bottom: 0;
+        }
+        .msg-content h1, .msg-content h2, .msg-content h3, .msg-content h4, .msg-content h5, .msg-content h6 {
+            margin: 1em 0 0.5em 0;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .msg-content h1 { font-size: 1.3em; }
+        .msg-content h2 { font-size: 1.2em; }
+        .msg-content h3 { font-size: 1.1em; }
+        .msg-content ul, .msg-content ol {
+            margin: 1em 0;
+            padding-left: 1.5em;
+        }
+        .msg-content li {
+            margin-bottom: 0.25em;
+            line-height: 1.6;
+        }
+        .msg-content blockquote {
+            border-left: 3px solid var(--model-color);
+            padding-left: 1em;
+            margin: 1em 0;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        .msg-content code {
+            background: rgba(128,128,128,0.08);
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+        .msg-content pre {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent);
+            padding: 1em;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1em 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            line-height: 1.3;
+            border: 1px solid rgba(128,128,128,0.1);
+        }
+        .msg-content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: inherit;
+        }
+        .msg-content a {
+            color: var(--model-color);
+            text-decoration: underline;
+        }
+        .msg-content strong, .msg-content b {
+            font-weight: 600;
+        }
+        .msg-content em, .msg-content i {
+            font-style: italic;
+        }
+        .msg-content hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(128,128,128,0.3), transparent);
+            margin: 2em 0;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div id="auth-overlay">
+        <div class="login-grid"></div>
+        <div class="text-center w-full max-w-sm p-10 relative z-10">
+            <div class="brand-logo mb-2">OpenLLM</div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-12">Experiments</p>
+            <div class="relative mb-12">
+                <input type="text" id="name-input" placeholder="What's your name?" autocomplete="off"
+                    class="w-full bg-transparent border-b-2 border-gray-100 py-4 text-xl text-center outline-none focus:border-black transition-all font-medium placeholder:opacity-20">
+            </div>
+            <button onclick="login()" class="group relative px-12 py-4 overflow-hidden rounded-full">
+                <div class="absolute inset-0 bg-black group-hover:bg-gray-800 transition-colors"></div>
+                <span class="relative text-[10px] font-black text-white uppercase tracking-[0.3em]">Continue</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Apple Styled Header (macos quick bar) -->
+    <header id="chat-header" class="chat-header-glass">
+        <div class="nav-content">
+            <div class="status-dots">
+                <div id="dot-main" class="dot"></div>
+                <div id="dot-aux" class="dot"></div>
+                <div id="dot-oc" class="dot"></div>
+            </div>
+            <div class="nav-logo">OpenLLM</div>
+            <div class="flex items-center gap-6">
+                <div class="nav-action" onclick="resetView()">Reset</div>
+                <div class="opacity-40 hover:opacity-100 transition-opacity cursor-pointer" onclick="toggleSettings()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="center-container" id="main-view">
+        <div id="main-branding" class="brand-logo flex flex-col items-center">
+            <span>OpenLLM</span>
+            <span id="model-tag" class="text-[9px] font-black uppercase tracking-[0.6em] mt-1 opacity-90">Cute</span>
+        </div>
+        
+        <div class="search-box-wrapper" id="search-container">
+            <div class="search-box">
+                <input type="text" id="user-input" class="search-input" placeholder="Drop a quick Hi..." autocomplete="off">
+                <div class="send-btn" onclick="dispatch()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </div>
+            </div>
+            <div class="mt-4 text-center opacity-50">
+                <span class="text-[9px] font-black tracking-[0.2em]">LLMs can make mistakes.</span>
+            </div>
+        </div>
+
+        <div class="card-stack" id="promo-cards">
+            <div class="floating-card card-white" onclick="useTemplate('Generate me a step by step guide to make a cup of coffee.')">
+                <div class="text-[9px] text-gray-400 font-bold mb-3 uppercase tracking-tighter">Coffee ☕</div>
+                <div class="text-[12px] font-medium leading-relaxed" id="user-display-card">Standby...</div>
+            </div>
+            <div class="floating-card card-yellow" onclick="useTemplate('How do I adopt a cat?')">
+                <div class="text-[9px] text-gray-500 font-bold mb-3 uppercase tracking-tighter">Cat 😽</div>
+                <div class="text-[12px] font-medium leading-relaxed">Say hi for a cat.</div>
+            </div>
+            <div class="floating-card card-dark" onclick="useTemplate('Code my first application in python.')">
+                <div class="text-[9px] text-gray-400 font-bold mb-3 uppercase tracking-tighter">Engineer 📟</div>
+                <div class="text-[12px] font-medium leading-relaxed">Let's start coding.</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="chat-main" id="chat-scroller">
+        <div id="msg-container"></div>
+    </main>
+
+    <div id="settings-panel" class="settings-panel">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-[12px] font-black uppercase tracking-[0.2em]">Settings</h2>
+                <p class="text-[9px] text-gray-400 font-mono"></p>
+            </div>
+            <button onclick="toggleSettings()" class="opacity-30 hover:opacity-100">✕</button>
+        </div>
+        
+        <div class="setting-row">
+            <span class="setting-label">Model Architecture</span>
+            <div class="grid grid-cols-4 gap-1">
+                <div class="model-pill active" onclick="setModel('cute')" id="model-cute">CUTE</div>
+                <div class="model-pill" onclick="setModel('flash')" id="model-flash">FLASH</div>
+                <div class="model-pill" onclick="setModel('pro')" id="model-pro">PRO</div>
+                <div class="model-pill" onclick="setModel('advanced')" id="model-advanced">ADV</div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Engine Mode</span>
+            <div class="grid grid-cols-2 gap-2">
+                <div id="btn-tensor" onclick="setStrategy('tensor')" class="py-3 border text-[9px] font-black rounded-xl cursor-pointer text-center transition-all active-pill">TENSOR</div>
+                <div id="btn-pipeline" onclick="setStrategy('pipeline')" class="py-3 border text-[9px] font-black rounded-xl cursor-pointer text-center transition-all">PIPELINE</div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Light Mode <div class="toggle-switch" id="toggle-dark" onclick="toggleDark()"></div></span>
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Haptic Feedback <div class="toggle-switch" id="toggle-haptic" onclick="toggleOption('haptic')"></div></span>
+            <p class="text-[9px] text-gray-400 mt-[-8px]">Vibration on token events</p>
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Compact View <div class="toggle-switch" id="toggle-compact" onclick="toggleOption('compact')"></div></span>
+            <p class="text-[9px] text-gray-400 mt-[-8px]">Minimize message padding</p>
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Latency Simulation <span id="latency-val" class="font-mono text-[8px]">40ms</span></span>
+            <input type="range" min="0" max="500" value="40" step="10" class="mt-2" oninput="updateLatency(this.value)">
+        </div>
+
+        <div class="setting-row border-none">
+            <span class="setting-label">What's happening</span>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="stat-card">
+                    <div class="text-[8px] text-gray-400 font-bold uppercase">Tokens</div>
+                    <div class="text-[14px] font-mono font-" id="stat-chars">None Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-[8px] text-gray-400 font-bold uppercase">Server</div>
+                    <div class="text-[14px] font-mono font-" id="stat-temp">Cloudfare-US</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <button onclick="logout()" class="w-full py-4 text-[10px] font-bold text-red-500 uppercase tracking-widest bg-red-500/10 rounded-2xl hover:bg-red-500 hover:text-white transition-all">De-Authorize</button>
+        </div>
+    </div>
+
+    <script>
+        let operatorName = localStorage.getItem('llm_op_name') || "";
+        let isProcessing = false;
+        let strategy = 'tensor';
+        let currentModel = 'cute';
+        let isHistoryVisible = false;
+        let chatMemory = [];
+        let totalChars = 0;
+        let latency = 40;
+        let options = { haptic: false, compact: false };
+
+        const BASE_INSTRUCTION = "Your name is OpenLLM. Developed by RandomCatsLab led by Dihan Ramanayaka. Concise technical responses. Use chat memory provided to maintain context.";
+
+        window.onload = () => {
+            if(operatorName) {
+                document.getElementById('user-display-card').innerText = `Time for a coffee.`;
+                gsap.to("#auth-overlay", { opacity: 0, pointerEvents: 'none', duration: 1 });
+            }
+        };
+
+        function setModel(m) {
+            currentModel = m;
+            document.querySelectorAll('.model-pill').forEach(el => el.classList.remove('active'));
+            document.getElementById(`model-${m}`).classList.add('active');
+            const tag = document.getElementById('model-tag');
+            tag.innerText = m;
+            const colors = { cute: '#ff8eb3', flash: '#888888', pro: '#4e86ff', advanced: '#8c4eff' };
+            document.documentElement.style.setProperty('--model-color', colors[m]);
+            gsap.fromTo(tag, { opacity: 0, scale: 0.9 }, { opacity: 0.9, scale: 1, duration: 0.4 });
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+
+        function login() {
+            const nameInput = document.getElementById('name-input');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            
+            operatorName = name;
+            localStorage.setItem('llm_op_name', name);
+            
+            // Update the display card
+            document.getElementById('user-display-card').innerText = `Time for a coffee.`;
+            
+            // Hide auth overlay
+            gsap.to("#auth-overlay", { opacity: 0, pointerEvents: 'none', duration: 1 });
+        }
+
+        function toggleDark() {
+            const body = document.body;
+            const toggle = document.getElementById('toggle-dark');
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            toggle.classList.toggle('on');
+        }
+
+        function toggleOption(opt) {
+            options[opt] = !options[opt];
+            document.getElementById(`toggle-${opt}`).classList.toggle('on');
+            if (opt === 'compact') {
+                document.querySelectorAll('.msg-block').forEach(el => el.style.marginBottom = options.compact ? '12px' : '48px');
+            }
+        }
+
+        function updateLatency(val) {
+            latency = parseInt(val);
+            document.getElementById('latency-val').innerText = `${latency}ms`;
+        }
+
+        function setStrategy(s) {
+            strategy = s;
+            document.getElementById('btn-tensor').classList.toggle('active-pill', s === 'tensor');
+            document.getElementById('btn-pipeline').classList.toggle('active-pill', s === 'pipeline');
+        }
+
+        function showChatMode() {
+            if(isHistoryVisible) return;
+            isHistoryVisible = true;
+            gsap.to("#main-branding", { opacity: 0, y: -20 });
+            gsap.to("#promo-cards", { opacity: 0, y: 30, pointerEvents: 'none' });
+            
+            const chatMain = document.getElementById('chat-scroller');
+            chatMain.style.display = 'block';
+            
+            gsap.to(chatMain, { opacity: 1, duration: 0.6 });
+            gsap.to("#main-view", { y: "42%", duration: 0.8, ease: "expo.inOut" });
+        }
+
+        function resetView() {
+            isHistoryVisible = false;
+            gsap.to(".chat-main", { opacity: 0, onComplete: () => document.getElementById('chat-scroller').style.display = 'none' });
+            gsap.to("#main-view", { y: "0%", duration: 0.6 });
+            gsap.to("#main-branding", { opacity: 1, y: 0 });
+            gsap.to("#promo-cards", { opacity: 1, y: 0, pointerEvents: 'auto' });
+            document.getElementById('msg-container').innerHTML = '';
+            chatMemory = [];
+        }
+
+        async function dispatch() {
+            const input = document.getElementById('user-input');
+            const promptStr = input.value.trim();
+            if(!promptStr || isProcessing) return;
+
+            isProcessing = true;
+            input.value = '';
+            showChatMode();
+
+            document.getElementById('dot-main').classList.add('active');
+            if(strategy === 'pipeline' || currentModel === 'advanced') document.getElementById('dot-aux').classList.add('active');
+            if(currentModel === 'pro' || currentModel === 'advanced') document.getElementById('dot-oc').classList.add('active');
+
+            createMessage('user', promptStr);
+            const aiId = 'ai-' + Date.now();
+            const aiBlock = createMessage('ai', '', aiId);
+            const content = aiBlock.querySelector('.msg-content');
+
+            const thinking = document.createElement('div');
+            thinking.className = 'thinking-orb';
+            content.appendChild(thinking);
+
+            try {
+                const memorySnippet = chatMemory.slice(-4).join("\n");
+                
+                // Add randomization for more varied responses
+                const personalities = [
+                    "Be helpful and concise, with a touch of humor",
+                    "Be detailed and thorough, like a knowledgeable professor", 
+                    "Be creative and imaginative, thinking outside the box",
+                    "Be practical and solution-focused, getting straight to the point",
+                    "Be friendly and conversational, like chatting with a friend"
+                ];
+                const tones = ["professional", "casual", "enthusiastic", "calm", "witty"];
+                const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
+                const randomTone = tones[Math.floor(Math.random() * tones.length)];
+                const randomSeed = Math.floor(Math.random() * 1000);
+                
+                const dynamicSystem = `${BASE_INSTRUCTION}\nOp: ${operatorName}\nMemory: ${memorySnippet}\nModel: ${currentModel}\nPersonality: ${randomPersonality}\nTone: ${randomTone}\nSeed: ${randomSeed}`;
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(promptStr)}?system=${encodeURIComponent(dynamicSystem)}&seed=${randomSeed}`);
+                const text = await response.text();
+
+                content.innerHTML = ""; 
+                chatMemory.push(`User: ${promptStr}`, `OpenLLM: ${text}`);
+                
+                let i = 0;
+                const charIncrement = currentModel === 'cute' ? 3 : (currentModel === 'advanced' ? 8 : 5);
+                const charDelay = strategy === 'tensor' ? 8 : Math.max(5, latency/30);
+
+                const timer = setInterval(() => {
+                    if (i < text.length) {
+                        i += charIncrement;
+                        const currentText = text.substring(0, i);
+                        
+                        // Update content without cursor
+                        content.innerHTML = marked.parse(currentText);
+                        
+                        totalChars += charIncrement;
+                        document.getElementById('stat-chars').innerText = totalChars.toLocaleString();
+                        document.getElementById('stat-temp').innerText = (32 + (totalChars/5000)).toFixed(1) + "°C";
+                    } else {
+                        clearInterval(timer);
+                        // Remove cursor and show final content
+                        content.innerHTML = marked.parse(text);
+                        
+                        // Message completed
+                        isProcessing = false;
+                        document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                    }
+                    
+                    const scroller = document.getElementById('chat-scroller');
+                    scroller.scrollTop = scroller.scrollHeight;
+                }, charDelay);
+            } catch (e) {
+                content.innerHTML = "Server or Internet issue.";
+                isProcessing = false;
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            const isVisible = panel.style.display === 'block';
+            if(isVisible) {
+                gsap.to(panel, { x: 340, duration: 0.4, onComplete: () => panel.style.display = 'none' });
+            } else {
+                panel.style.display = 'block';
+                gsap.fromTo(panel, { x: 340 }, { x: 0, duration: 0.6, ease: "expo.out" });
+            }
+        }
+
+        function createMessage(role, text, id) {
+            const container = document.getElementById('msg-container');
+            const block = document.createElement('div');
+            block.className = "msg-block";
+            if (options.compact) block.style.marginBottom = '12px';
+            if(id) block.id = id;
+            const isUser = role === 'user';
+            block.innerHTML = `
+                <div class="flex flex-col ${isUser ? 'items-end' : 'items-start'}">
+                    <span class="sender-label">
+                        ${isUser ? operatorName : 'OpenLLM (' + currentModel + ')'}
+                    </span>
+                    <div class="msg-content text-[15px] leading-relaxed max-w-[100%] ${isUser ? 'bg-gray-500/10 px-5 py-3.5 rounded-2xl' : ''}">
+                        ${text}
+                    </div>
+                    
+                </div>
+            `;
+            container.appendChild(block);
+            const scroller = document.getElementById('chat-scroller');
+            scroller.scrollTop = scroller.scrollHeight;
+            return block;
+        }
+
+        function useTemplate(t) { document.getElementById('user-input').value = t; dispatch(); }
+
+        function copyMessage(element) {
+            // Find the message content in the same message block
+            const messageBlock = element.closest('.msg-block');
+            const messageContent = messageBlock.querySelector('.msg-content');
+            
+            // Get the text content, removing any HTML/markdown artifacts
+            let textToCopy = messageContent.textContent || messageContent.innerText;
+            
+            // Remove the typing cursor if present
+            
+            
+            // Copy to clipboard
+            
+        }
+
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') dispatch(); });
+    </script>
+</body>
+</html>
