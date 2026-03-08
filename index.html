@@ -3,296 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation | chat.openllm</title>
+    <title>Chat.OpenLLM | Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        
+        :root {
+            --apple-bg: #ffffff;
+            --apple-text: #1d1d1f;
+            --apple-secondary: #86868b;
+            --google-blue: #1a73e8;
+            --google-surface: #f8f9fa;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            color: #111827;
-            scroll-behavior: smooth;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--apple-text);
+            background-color: var(--apple-bg);
+            -webkit-font-smoothing: antialiased;
         }
 
-        .sidebar {
-            width: 280px;
-            background-color: #fcfcfc;
-            border-right: 1px solid #f3f4f6;
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
         }
 
-        .nav-link {
-            display: block;
-            padding: 0.625rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #64748b;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
+        /* Material Design 3 Pill Sidebar Item */
+        .sidebar-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 100px;
+            margin-bottom: 4px;
         }
 
-        .nav-link:hover {
-            color: #111827;
-            background-color: #f1f5f9;
-        }
-
-        .content-area {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        pre {
-            background-color: #111827;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            color: #e5e7eb;
-            font-family: 'ui-monospace', monospace;
-            font-size: 0.875rem;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-            border: 1px solid #1f2937;
-        }
-
-        .data-notice {
-            background: linear-gradient(to right, #fffaf0, #fff);
-            border: 1px solid #feebc8;
-            border-left: 4px solid #f6ad55;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-        }
-
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-top: 4rem;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.025em;
-            color: #111827;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        h2::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #f1f5f9;
-            margin-left: 1rem;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        .badge-primary { background: #6366f1; color: #ffffff; }
-        .badge-outline { border: 1px solid #e2e8f0; color: #64748b; }
-        .badge-soft-orange { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        }
-
-        .btn-black {
-            background: #111827;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+        .sidebar-item.active {
+            background-color: #e8f0fe; /* Google Light Blue */
+            color: var(--google-blue);
             font-weight: 600;
-            transition: transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .btn-black:hover {
-            transform: translateY(-1px);
+        .sidebar-item:hover:not(.active) {
+            background-color: #f1f3f4;
+        }
+
+        .apple-hero-text {
+            background: linear-gradient(180deg, #1d1d1f 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tactical Google-style Cards */
+        .m3-card {
+            background: var(--google-surface);
+            border-radius: 24px;
+            padding: 24px;
+            transition: transform 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .m3-card:hover {
+            border-color: #dee2e6;
+            transform: translateY(-2px);
+        }
+
+        .code-block {
+            background-color: #1d1d1f;
+            color: #f8f9fa;
+            border-radius: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .try-now-btn {
             background: #000;
+            color: #fff;
+            border-radius: 100px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        @media (max-width: 1024px) {
-            .sidebar { display: none; }
-            .content-area { padding: 3rem 1.5rem; }
+        .try-now-btn:hover {
+            background: #333;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade { animation: fadeIn 0.5s ease forwards; }
     </style>
 </head>
-<body class="flex">
+<body class="overflow-hidden">
 
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar h-screen sticky top-0 overflow-y-auto hidden lg:block p-8">
-        <div class="mb-12 px-2">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">O</div>
-                <span class="font-extrabold text-lg tracking-tight">chat.openllm</span>
-            </div>
-        </div>
+    <!-- Mobile Header -->
+    <header class="lg:hidden glass-nav fixed top-0 w-full z-50 border-b border-gray-100 px-6 py-4 flex justify-between items-center">
+        <span class="font-bold tracking-tight text-lg">chat.openllm</span>
+        <button id="menu-toggle" class="p-2 bg-gray-100 rounded-full">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </header>
 
-        <nav class="space-y-8">
-            <section>
-                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Product</p>
-                <div class="space-y-1">
-                    <a href="#intro" class="nav-link">Overview</a>
-                    <a href="#features" class="nav-link">Features</a>
-                    <a href="#setup" class="nav-link">Getting Started</a>
-                </div>
-            </section>
-            
-            <section>
-                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Legal</p>
-                <div class="space-y-1">
-                    <a href="#privacy" class="nav-link">Privacy & Data</a>
-                    <a href="#license" class="nav-link">License</a>
-                </div>
-            </section>
-        </nav>
-
-        <div class="mt-24 px-3">
-            <a href="https://github.com/RandomCatUser/chat.openllm" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-widest">
-                GitHub Repository
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1">
+    <div class="flex h-screen overflow-hidden pt-14 lg:pt-0">
         
-        <!-- Hero Section -->
-        <header id="intro" class="hero-gradient px-6 py-16 md:py-24 border-b border-gray-100">
-            <div class="max-w-3xl mx-auto">
-                <div class="flex flex-wrap gap-3 mb-8">
-                    <span class="badge badge-primary">Open Source</span>
-                    <span class="badge badge-outline">Meow!</span>
-                    <span class="badge badge-outline">No Install</span>
-                </div>
-                
-                <h1 class="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight text-gray-900 leading-tight">
-                    Soft Introduction
-                </h1>
-                
-                <p class="text-xl text-slate-600 leading-relaxed mb-10">
-                    <strong>chat.openllm</strong> is an open-source LLM experience built with Pollination, designed to simulate and explore a cluster-like system directly inside the browser.
-                </p>
-
-                <div class="flex items-center gap-6">
-                    <a href="Openeria/openllm.html" class="btn-black">
-                        Try Now <i class="fas fa-arrow-right text-xs"></i>
-                    </a>
-                    <span class="text-sm font-medium text-slate-400 italic">Lightweight. Interactive. Customizable.</span>
+        <!-- Sidebar (Material Design influenced) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 lg:relative lg:flex transition-transform duration-300 ease-in-out z-40 w-72 bg-white border-r border-gray-100 flex-col">
+            <div class="p-8 pb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-none">OpenLLM</h1>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Cluster Sim</p>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <div class="content-area">
-            
-            <!-- Features Section -->
-            <section id="features">
-                <h2>Features</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                        <span class="badge badge-outline mb-3">Core</span>
-                        <h3 class="font-bold text-lg mb-2">Browser Simulation</h3>
-                        <p class="text-sm text-slate-600">Run cluster logic entirely on the client side without backend overhead.</p>
-                    </div>
-                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                        <span class="badge badge-outline mb-3">Architecture</span>
-                        <h3 class="font-bold text-lg mb-2">Modular Structure</h3>
-                        <p class="text-sm text-slate-600">Decoupled files for easier maintenance and community forking.</p>
+            <nav class="flex-1 px-4 space-y-8 no-scrollbar overflow-y-auto">
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-3">Core</p>
+                    <div class="space-y-1">
+                        <button onclick="navigate('introduction')" class="sidebar-item active w-full text-left px-5 py-3 text-[14px] flex items-center gap-4">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            Home
+                        </button>
+                        <button onclick="navigate('features')" class="sidebar-item w-full text-left px-5 py-3 text-[14px] flex items-center gap-4">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            Features
+                        </button>
                     </div>
                 </div>
-                <div class="mt-8 space-y-4 text-slate-700">
-                    <p>• Simple navigation system for cluster nodes.</p>
-                    <p>• Minimal CSS and Vanilla JS for easy customization.</p>
-                    <p>• Built to be improved by the community.</p>
-                </div>
-            </section>
 
-            <!-- Getting Started Section -->
-            <section id="setup">
-                <h2>Getting Started</h2>
-                <p class="text-slate-600 mb-6">Clone the project and explore locally with zero installation required.</p>
-                
-                <div class="space-y-4">
-                    <p class="text-sm font-bold text-slate-800">1. Clone the repository</p>
-                    <pre><code>git clone https://github.com/RandomCatUser/chat.openllm</code></pre>
-                    
-                    <p class="text-sm font-bold text-slate-800 mt-6">2. Navigate and Run</p>
-                    <p class="text-slate-600 text-sm mb-2">Open <code>index.html</code> in any modern browser.</p>
-                    <pre><code>cd chat.openllm</code></pre>
-                </div>
-            </section>
-
-            <!-- Privacy Section -->
-            <section id="privacy">
-                <h2>Privacy & Data Flow</h2>
-                <div class="data-notice">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="badge badge-soft-orange">Data Notice</span>
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-3">Technical</p>
+                    <div class="space-y-1">
+                        <button onclick="navigate('quickstart')" class="sidebar-item w-full text-left px-5 py-3 text-[14px] flex items-center gap-4">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
+                            Quickstart
+                        </button>
+                        <button onclick="navigate('roadmap')" class="sidebar-item w-full text-left px-5 py-3 text-[14px] flex items-center gap-4">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                            Roadmap
+                        </button>
                     </div>
-                    <p class="text-slate-800 text-sm leading-relaxed font-medium">
-                        To provide advanced AI simulation features, <strong>this application shares your data with Pollinations</strong>. 
-                        Your prompts and interaction data are processed by the Pollinations infrastructure to generate real-time cluster responses.
+                </div>
+            </nav>
+
+            <div class="p-6">
+                <a href="Openeria/openllm.html" class="try-now-btn w-full block text-center py-4 text-sm font-semibold">
+                    Try Now
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="content-area" class="flex-1 overflow-y-auto bg-white no-scrollbar">
+            <div id="dynamic-content" class="max-w-4xl mx-auto px-8 lg:px-16 py-20 lg:py-32 animate-fade">
+                <!-- Initial content is introduction -->
+                <section>
+                    <div class="flex gap-2 mb-8">
+                        <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Open Source</span>
+                        <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Apache 2.0</span>
+                    </div>
+                    <h1 class="text-[56px] lg:text-[72px] font-bold tracking-tight mb-8 leading-[1.1] apple-hero-text">
+                        The future of browser-based <span class="text-black">LLM clusters.</span>
+                    </h1>
+                    <p class="text-[24px] text-gray-500 leading-relaxed mb-16 max-w-2xl">
+                        A lightweight, interactive experience built with Pollination. Simulate complex cluster systems directly in your browser.
                     </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="m3-card">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">🚀</div>
+                            <h3 class="font-bold mb-2">Lightweight</h3>
+                            <p class="text-sm text-gray-500">No heavy backend. pure HTML/JS performance.</p>
+                        </div>
+                        <div class="m3-card">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">🎨</div>
+                            <h3 class="font-bold mb-2">Customizable</h3>
+                            <p class="text-sm text-gray-500">Easily extend the modular structure to your needs.</p>
+                        </div>
+                        <div class="m3-card">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">📦</div>
+                            <h3 class="font-bold mb-2">Zero Install</h3>
+                            <p class="text-sm text-gray-500">Run directly from index.html in any browser.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const content = {
+            introduction: `
+                <div class="animate-fade">
+                    <div class="flex gap-2 mb-8">
+                        <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Open Source</span>
+                        <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Apache 2.0</span>
+                    </div>
+                    <h1 class="text-[56px] lg:text-[72px] font-bold tracking-tight mb-8 leading-[1.1] apple-hero-text">
+                        The future of browser-based <span class="text-black">LLM clusters.</span>
+                    </h1>
+                    <p class="text-[24px] text-gray-500 leading-relaxed mb-16 max-w-2xl">
+                        chat.openllm is an open-source LLM experience built with Pollination, designed to explore cluster-like systems directly inside the browser.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="m3-card">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">🚀</div>
+                            <h3 class="font-bold mb-2">Interactive</h3>
+                            <p class="text-sm text-gray-500 text-balance">Simulate complex AI behaviors with a simple frontend stack.</p>
+                        </div>
+                        <div class="m3-card">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">😺</div>
+                            <h3 class="font-bold mb-2">Free Meow!</h3>
+                            <p class="text-sm text-gray-500 text-balance">Completely open source and free for everyone to fork and use.</p>
+                        </div>
+                        <div class="m3-card">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">🛠️</div>
+                            <h3 class="font-bold mb-2">Modular</h3>
+                            <p class="text-sm text-gray-500 text-balance">Clean file structure for easy navigation and editing.</p>
+                        </div>
+                    </div>
                 </div>
-                <p class="mt-4 text-xs text-slate-400 italic">
-                    We do not store your personal data on local servers. Processing happens in real-time.
-                </p>
-            </section>
-
-            <!-- Project Structure -->
-            <section id="structure">
-                <h2>Project Structure</h2>
-                <div class="border border-slate-200 rounded-xl overflow-hidden">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 border-b border-slate-200">
-                            <tr>
-                                <th class="px-6 py-3 font-bold text-slate-700 uppercase tracking-widest text-[10px]">File Name</th>
-                                <th class="px-6 py-3 font-bold text-slate-700 uppercase tracking-widest text-[10px]">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-slate-600">
-                            <tr>
-                                <td class="px-6 py-4 font-mono text-indigo-600">index.html</td>
-                                <td class="px-6 py-4">Documentation & Landing Page</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 font-mono text-indigo-600">menu.html</td>
-                                <td class="px-6 py-4">Main App Navigation Interface</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 font-mono text-indigo-600">openeria.html</td>
-                                <td class="px-6 py-4">Core Orchestration Logic</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            `,
+            features: `
+                <div class="animate-fade">
+                    <h2 class="text-5xl font-bold mb-12 tracking-tight">Capabilities.</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-6 p-8 bg-gray-50 rounded-[32px]">
+                            <div class="text-3xl">🌐</div>
+                            <div>
+                                <h4 class="font-bold text-xl">Browser Simulation</h4>
+                                <p class="text-gray-500">Simulate a high-performance cluster directly in the DOM.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6 p-8 bg-gray-50 rounded-[32px]">
+                            <div class="text-3xl">📐</div>
+                            <div>
+                                <h4 class="font-bold text-xl">Clean Modular Structure</h4>
+                                <p class="text-gray-500">Simplified codebase for rapid prototyping of AI interfaces.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6 p-8 bg-gray-50 rounded-[32px]">
+                            <div class="text-3xl">🧭</div>
+                            <div>
+                                <h4 class="font-bold text-xl">Simple Navigation</h4>
+                                <p class="text-gray-500">Intuitive menu and routing system built with vanilla JS.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-16">
+                        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">File Structure</h3>
+                        <div class="code-block text-emerald-400">
+                            chat.openllm/ <br>
+                            ├── index.html <br>
+                            ├── menu.html <br>
+                            ├── openeria.html <br>
+                            ├── LICENSE <br>
+                            └── README.md
+                        </div>
+                    </div>
                 </div>
-            </section>
+            `,
+            quickstart: `
+                <div class="animate-fade">
+                    <h2 class="text-5xl font-bold mb-6 tracking-tight">Quickstart.</h2>
+                    <p class="text-xl text-gray-500 mb-12">No installation required. Pure browser execution.</p>
+                    
+                    <div class="space-y-12">
+                        <section>
+                            <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">1</span>
+                                Clone Repository
+                            </h3>
+                            <div class="code-block">
+                                <span class="text-gray-500"># Fork it or clone directly</span> <br>
+                                git clone https://github.com/RandomCatUser/chat.openllm <br>
+                                cd chat.openllm
+                            </div>
+                        </section>
+                        
+                        <section>
+                            <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">2</span>
+                                Run App
+                            </h3>
+                            <p class="text-gray-500 mb-4">Just open <code class="bg-gray-100 px-2 py-1 rounded">index.html</code> in any modern browser.</p>
+                            <div class="p-6 bg-blue-50 border border-blue-100 rounded-3xl text-blue-800 text-sm">
+                                <strong>Pro-tip:</strong> Use a local server extension (like Live Server in VS Code) for the best experience with modular files.
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            `,
+            roadmap: `
+                <div class="animate-fade">
+                    <h2 class="text-5xl font-bold mb-12 tracking-tight">Roadmap.</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-8 border border-gray-100 rounded-[32px]">
+                            <div class="text-blue-600 font-bold mb-4">Upcoming</div>
+                            <h4 class="text-2xl font-bold mb-2">Advanced UI Animations</h4>
+                            <p class="text-gray-500">Fluid transitions between cluster states and model responses.</p>
+                        </div>
+                        <div class="p-8 border border-gray-100 rounded-[32px]">
+                            <div class="text-blue-600 font-bold mb-4">Upcoming</div>
+                            <h4 class="text-2xl font-bold mb-2">Theme Toggles</h4>
+                            <p class="text-gray-500">Native dark and light mode support across all simulation windows.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-20 p-10 bg-gray-900 text-white rounded-[40px] text-center">
+                        <h3 class="text-3xl font-bold mb-4">Contribute</h3>
+                        <p class="text-gray-400 mb-8 max-w-lg mx-auto">Want to improve the cluster? Fork the project, create a branch, and submit a pull request.</p>
+                        <a href="https://github.com/RandomCatUser/chat.openllm" target="_blank" class="inline-block bg-white text-black px-8 py-3 rounded-full font-bold hover:opacity-80 transition-opacity">
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            `
+        };
 
-            <!-- License Section -->
-            <section id="license">
-                <h2>License</h2>
-                <p class="text-slate-600">
-                    Distributed under the <strong>Apache License 2.0</strong>. See <code>LICENSE</code> for more details.
-                </p>
-            </section>
+        function navigate(sectionId) {
+            const container = document.getElementById('dynamic-content');
+            
+            // Animation handling
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                container.innerHTML = content[sectionId];
+                
+                // Update active state in sidebar (Material Pill style)
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.innerText.toLowerCase().includes(sectionId.substring(0, 4)) || 
+                       (sectionId === 'introduction' && item.innerText.includes('Home'))) {
+                        item.classList.add('active');
+                    }
+                });
 
-            <!-- Footer -->
-            <footer class="mt-32 pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 pb-12">
-                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">&copy; 2024 chat.openllm</p>
-                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Built with ❤️ by RandomCatUser</p>
-                <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Powered by Pollinations</p>
-            </footer>
-        </div>
-    </main>
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+                
+                document.getElementById('content-area').scrollTo({top: 0, behavior: 'smooth'});
+                if (window.innerWidth < 1024) toggleSidebar(false);
+            }, 250);
+        }
 
+        // Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        let isSidebarOpen = false;
+
+        function toggleSidebar(state) {
+            isSidebarOpen = state;
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        menuBtn.addEventListener('click', () => toggleSidebar(!isSidebarOpen));
+    </script>
 </body>
 </html>
-
