@@ -24,16 +24,6 @@ Perfect for experimenting with AI-style interfaces without heavy backend setup.
 
 ---
 
-## Open Source
-
-<p align="center">
-  <img src="Openeria/assets/OpenLLM.mp4" width="300">
-</p>
-
-Free for everyone Meow!
-
----
-
 ## Features
 
 * Browser-based cluster simulation
@@ -41,44 +31,6 @@ Free for everyone Meow!
 * Simple navigation system
 * Easy customization
 * Open-source and extendable
-
----
-
-## Project Structure
-
-```bash
-chat.openllm/
-│
-├── index.html
-├── menu.html
-├── openeria.html
-├── LICENSE
-└── README.md
-```
-
----
-
-## Getting Started
-
-### Clone
-
-```bash
-git clone https://github.com/RandomCatUser/chat.openllm
-cd chat.openllm
-```
-
-### Run
-
-Open `index.html` in your browser.
-
-No installation required.
-
----
-
-## Roadmap
-
-* Advanced UI animations
-* Dark/light theme toggle
 
 ---
 
