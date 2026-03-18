@@ -52,17 +52,17 @@
             transform: translateX(-50%);
             width: min(720px, calc(100% - 32px));
             height: 50px;
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: saturate(160%) blur(24px);
-            -webkit-backdrop-filter: saturate(160%) blur(24px);
+            background: var(--glass);
+            backdrop-filter: saturate(160%) blur(22px);
+            -webkit-backdrop-filter: saturate(160%) blur(22px);
             z-index: 140;
             display: flex;
-            border: 1px solid rgba(255,255,255,0.22);
+            border: 1px solid var(--nav-border);
             border-radius: 28px;
             align-items: center;
             justify-content: center;
             padding: 0 14px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 18px 55px rgba(0,0,0,0.16);
             overflow: hidden;
         }
 
@@ -87,6 +87,7 @@
             letter-spacing: -0.05em;
             font-size: 13px;
             opacity: 0.9;
+            color: var(--accent);
         }
 
         .nav-action {
@@ -95,14 +96,17 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             opacity: 0.65;
-            transition: opacity 0.2s, transform 0.2s;
+            transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
             cursor: pointer;
             padding: 6px 10px;
             border-radius: 999px;
+            background: rgba(255,255,255,0.1);
+            color: var(--accent);
         }
         .nav-action:hover {
             opacity: 1;
             transform: translateY(-1px);
+            background: rgba(255,255,255,0.18);
         }
 
         /* Custom Scrollbar */
@@ -111,8 +115,9 @@
         ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.2); border-radius: 10px; }
 
         #auth-overlay {
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000;
             display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
         }
         .login-grid {
             position: absolute; inset: 0;
@@ -120,6 +125,73 @@
             background-size: 40px 40px;
             opacity: 0.03;
             mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .login-card {
+            position: relative;
+            width: min(420px, calc(100% - 48px));
+            padding: 34px 26px;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 24px 72px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            backdrop-filter: blur(14px);
+        }
+
+        .login-card h1 {
+            font-size: 22px;
+            letter-spacing: -0.04em;
+            margin: 0;
+        }
+
+        .login-card p {
+            font-size: 11px;
+            opacity: 0.75;
+            margin: 0;
+        }
+
+        .login-input {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 14px;
+            padding: 12px 14px;
+            color: var(--accent);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .login-input:focus {
+            border-color: rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.14);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px 0;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.16);
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.2s;
+        }
+        .login-button:hover {
+            background: rgba(255,255,255,0.22);
+            transform: translateY(-1px);
+        }
+
+        .login-subtle {
+            font-size: 11px;
+            opacity: 0.55;
+            text-align: center;
+            margin-top: 4px;
         }
 
         .center-container {
@@ -506,36 +578,24 @@
 
     <div id="auth-overlay">
         <div class="login-grid"></div>
-        <div class="text-center w-full max-w-sm p-10 relative z-10">
-            <div class="brand-logo mb-2">OpenLLM</div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-6">Set up your profile</p>
+        <div class="login-card">
+            <h1>Welcome to OpenLLM</h1>
+            <p>Tell me a bit about yourself so we can get rolling.</p>
 
-            <div class="mb-6 flex flex-col items-center gap-2">
+            <div class="mb-2 flex flex-col items-center gap-2">
                 <div id="avatar-preview" class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-200">
                     <span class="text-[10px] text-gray-500">Photo</span>
                 </div>
                 <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="handleProfilePhoto(event)">
-                <button type="button" onclick="document.getElementById('photo-input').click()" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 hover:text-gray-900 transition">Upload photo</button>
+                <button type="button" onclick="document.getElementById('photo-input').click()" class="login-button" style="width: auto; padding: 10px 18px; letter-spacing: 0.12em;">Upload photo</button>
             </div>
 
-            <div class="relative mb-4">
-                <input type="text" id="name-input" placeholder="What's your name?" autocomplete="off"
-                    class="w-full bg-transparent border-b-2 border-gray-100 py-3 text-lg text-center outline-none focus:border-black transition-all font-medium placeholder:opacity-20">
-            </div>
+            <input type="text" id="name-input" placeholder="Your name" autocomplete="off" class="login-input">
+            <input type="date" id="birthday-input" class="login-input" placeholder="Birthday">
+            <textarea id="personality-input" rows="3" placeholder="A little about you (optional)" class="login-input" style="resize: none;"></textarea>
 
-            <div class="relative mb-4">
-                <input type="date" id="birthday-input" class="w-full bg-transparent border-b-2 border-gray-100 py-3 text-sm text-center outline-none focus:border-black transition-all" placeholder="Birthday">
-            </div>
-
-            <div class="relative mb-8">
-                <textarea id="personality-input" rows="3" placeholder="A little about you (optional)"
-                    class="w-full bg-transparent border-b-2 border-gray-100 py-3 text-sm text-center outline-none focus:border-black transition-all resize-none placeholder:opacity-30"></textarea>
-            </div>
-
-            <button onclick="login()" class="group relative px-12 py-4 overflow-hidden rounded-full">
-                <div class="absolute inset-0 bg-black group-hover:bg-gray-800 transition-colors"></div>
-                <span class="relative text-[10px] font-black text-white uppercase tracking-[0.3em]">Continue</span>
-            </button>
+            <button onclick="login()" class="login-button">Continue</button>
+            <div class="login-subtle">You can update this later in Settings.</div>
         </div>
     </div>
 
