@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OpenLLM - Intelligence</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,23 +47,23 @@
         /* Apple Styled Persistent Quick Bar */
         .chat-header-glass {
             position: fixed;
-            top: 16px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: min(720px, calc(100% - 32px));
-            height: 50px;
+            width: auto;
+            min-width: 320px;
+            height: 48px;
             background: var(--glass);
-            backdrop-filter: saturate(160%) blur(22px);
-            -webkit-backdrop-filter: saturate(160%) blur(22px);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             z-index: 140;
             display: flex;
             border: 1px solid var(--nav-border);
-            border-radius: 28px;
+            border-radius: 24px;
             align-items: center;
             justify-content: center;
-            padding: 0 14px;
-            box-shadow: 0 18px 55px rgba(0,0,0,0.16);
-            overflow: hidden;
+            padding: 0 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
 
         .nav-content {
@@ -71,42 +71,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 18px;
-        }
-
-        .nav-left,
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-logo {
-            flex: 1;
-            text-align: center;
-            letter-spacing: -0.05em;
-            font-size: 13px;
-            opacity: 0.9;
-            color: var(--accent);
-        }
-
-        .nav-action {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.65;
-            transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.1);
-            color: var(--accent);
-        }
-        .nav-action:hover {
-            opacity: 1;
-            transform: translateY(-1px);
-            background: rgba(255,255,255,0.18);
+            gap: 40px;
         }
 
         /* Custom Scrollbar */
@@ -115,9 +80,8 @@
         ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.2); border-radius: 10px; }
 
         #auth-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000;
+            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
             display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px);
         }
         .login-grid {
             position: absolute; inset: 0;
@@ -125,73 +89,6 @@
             background-size: 40px 40px;
             opacity: 0.03;
             mask-image: radial-gradient(circle at center, black, transparent 80%);
-        }
-
-        .login-card {
-            position: relative;
-            width: min(420px, calc(100% - 48px));
-            padding: 34px 26px;
-            border-radius: 22px;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 24px 72px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-            backdrop-filter: blur(14px);
-        }
-
-        .login-card h1 {
-            font-size: 22px;
-            letter-spacing: -0.04em;
-            margin: 0;
-        }
-
-        .login-card p {
-            font-size: 11px;
-            opacity: 0.75;
-            margin: 0;
-        }
-
-        .login-input {
-            width: 100%;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.22);
-            border-radius: 14px;
-            padding: 12px 14px;
-            color: var(--accent);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .login-input:focus {
-            border-color: rgba(255,255,255,0.35);
-            background: rgba(255,255,255,0.14);
-        }
-
-        .login-button {
-            width: 100%;
-            padding: 14px 0;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.22);
-            background: rgba(255,255,255,0.16);
-            color: var(--accent);
-            font-weight: 800;
-            letter-spacing: 0.18em;
-            cursor: pointer;
-            transition: background 0.25s, transform 0.2s;
-        }
-        .login-button:hover {
-            background: rgba(255,255,255,0.22);
-            transform: translateY(-1px);
-        }
-
-        .login-subtle {
-            font-size: 11px;
-            opacity: 0.55;
-            text-align: center;
-            margin-top: 4px;
         }
 
         .center-container {
@@ -204,19 +101,6 @@
             padding: 20px;
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            z-index: 60; /* keep input and primary UI above the chat message layer */
-        }
-
-        .chat-main {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 100px;
-            overflow-y: scroll;
-            padding: 100px 0 40px 0;
-            display: none;
-            opacity: 0;
-            scrollbar-width: none;
-            scroll-behavior: smooth;
-            z-index: 40;
         }
 
         .brand-logo {
@@ -303,36 +187,6 @@
             [data-theme='dark'] .card-yellow { background: #4a452a; color: #fff; }
             .card-dark { background: #1a1a1a; color: white; transform: rotate(-1deg); }
             .floating-card:hover { transform: translateY(-15px) rotate(0deg) scale(1.05); z-index: 110; }
-        }
-
-        /* Mobile Friendly Layout */
-        @media (max-width: 768px) {
-            .chat-header-glass {
-                top: 10px;
-                width: calc(100% - 24px);
-                min-width: auto;
-                padding: 0 14px;
-            }
-            .nav-content { gap: 16px; }
-            .nav-logo { font-size: 12px; }
-            .nav-action { font-size: 9px; }
-            .search-box-wrapper { max-width: 100%; padding: 0 10px; }
-            .search-box { padding: 8px 12px; }
-            .search-input { font-size: 14px; }
-            .send-btn { width: 38px; height: 38px; border-radius: 16px; }
-            .brand-logo { margin-bottom: 24px; }
-            .card-stack { gap: 12px; margin-top: 30px; }
-            .floating-card { width: 150px; padding: 14px; }
-            .chat-main { bottom: 90px; padding: 90px 0 36px 0; }
-            .msg-block { padding: 0 16px; margin-bottom: 28px; }
-            .msg-content { font-size: 14px; }
-            .settings-panel { width: 100%; max-width: 340px; }
-        }
-
-        @media (min-width: 1024px) {
-            .chat-header-glass {
-                width: min(720px, calc(100% - 120px));
-            }
         }
 
         .chat-main {
@@ -432,24 +286,6 @@
             color: #888;
         }
         .model-pill.active { border-color: var(--accent); color: var(--accent); background: rgba(128,128,128,0.05); }
-
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(128,128,128,0.2);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
 
         .nav-logo {
             font-family: 'JetBrains Mono', monospace;
@@ -578,44 +414,32 @@
 
     <div id="auth-overlay">
         <div class="login-grid"></div>
-        <div class="login-card">
-            <h1>Welcome to OpenLLM</h1>
-            <p>Tell me a bit about yourself so we can get rolling.</p>
-
-            <div class="mb-2 flex flex-col items-center gap-2">
-                <div id="avatar-preview" class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-200">
-                    <span class="text-[10px] text-gray-500">Photo</span>
-                </div>
-                <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="handleProfilePhoto(event)">
-                <button type="button" onclick="document.getElementById('photo-input').click()" class="login-button" style="width: auto; padding: 10px 18px; letter-spacing: 0.12em;">Upload photo</button>
+        <div class="text-center w-full max-w-sm p-10 relative z-10">
+            <div class="brand-logo mb-2">OpenLLM</div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-12">Experiments</p>
+            <div class="relative mb-12">
+                <input type="text" id="name-input" placeholder="What's your name?" autocomplete="off"
+                    class="w-full bg-transparent border-b-2 border-gray-100 py-4 text-xl text-center outline-none focus:border-black transition-all font-medium placeholder:opacity-20">
             </div>
-
-            <input type="text" id="name-input" placeholder="Your name" autocomplete="off" class="login-input">
-            <input type="date" id="birthday-input" class="login-input" placeholder="Birthday">
-            <textarea id="personality-input" rows="3" placeholder="A little about you (optional)" class="login-input" style="resize: none;"></textarea>
-
-            <button onclick="login()" class="login-button">Continue</button>
-            <div class="login-subtle">You can update this later in Settings.</div>
+            <button onclick="login()" class="group relative px-12 py-4 overflow-hidden rounded-full">
+                <div class="absolute inset-0 bg-black group-hover:bg-gray-800 transition-colors"></div>
+                <span class="relative text-[10px] font-black text-white uppercase tracking-[0.3em]">Continue</span>
+            </button>
         </div>
     </div>
 
     <!-- Apple Styled Header (macos quick bar) -->
     <header id="chat-header" class="chat-header-glass">
         <div class="nav-content">
-            <div class="nav-left">
-                <div id="profile-avatar" class="profile-avatar" title="Profile" onclick="toggleSettings()"></div>
-                <div class="status-dots">
-                    <div id="dot-main" class="dot"></div>
-                    <div id="dot-aux" class="dot"></div>
-                    <div id="dot-oc" class="dot"></div>
-                </div>
+            <div class="status-dots">
+                <div id="dot-main" class="dot"></div>
+                <div id="dot-aux" class="dot"></div>
+                <div id="dot-oc" class="dot"></div>
             </div>
-
             <div class="nav-logo">OpenLLM</div>
-
-            <div class="nav-right">
+            <div class="flex items-center gap-6">
                 <div class="nav-action" onclick="resetView()">Reset</div>
-                <div class="nav-action" onclick="toggleSettings()" title="Settings">
+                <div class="opacity-40 hover:opacity-100 transition-opacity cursor-pointer" onclick="toggleSettings()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 </div>
             </div>
@@ -702,18 +526,6 @@
         </div>
 
         <div class="setting-row">
-            <span class="setting-label">User Profile</span>
-            <div class="mt-4">
-                <label class="block text-[9px] text-gray-400 font-bold uppercase mb-2">Birthday</label>
-                <input type="date" id="birthday-input" class="w-full py-2 px-3 text-[12px] bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" placeholder="Select your birthday">
-            </div>
-            <div class="mt-4">
-                <label class="block text-[9px] text-gray-400 font-bold uppercase mb-2">Personality Details</label>
-                <textarea id="personality-input" class="w-full py-2 px-3 text-[12px] bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 resize-none" rows="3" placeholder="Describe your personality, interests, or any details you'd like the AI to know about you"></textarea>
-            </div>
-        </div>
-
-        <div class="setting-row">
             <span class="setting-label">Latency Simulation <span id="latency-val" class="font-mono text-[8px]">40ms</span></span>
             <input type="range" min="0" max="500" value="40" step="10" class="mt-2" oninput="updateLatency(this.value)">
         </div>
@@ -747,93 +559,15 @@
         let totalChars = 0;
         let latency = 40;
         let options = { haptic: false, compact: false };
-        let userPhoto = localStorage.getItem('llm_user_photo') || "";
-        let userBirthday = localStorage.getItem('llm_user_birthday') || "";
-        let userPersonality = localStorage.getItem('llm_user_personality') || "";
 
         const BASE_INSTRUCTION = "Your name is OpenLLM. Developed by RandomCatsLab led by Dihan Ramanayaka. Concise technical responses. Use chat memory provided to maintain context.";
 
         window.onload = () => {
-            document.getElementById('name-input').value = operatorName;
-            document.querySelectorAll('#birthday-input').forEach(el => el.value = userBirthday);
-            document.querySelectorAll('#personality-input').forEach(el => el.value = userPersonality);
-
-            // Show profile upfront if we already have one
-            updateProfileUI();
-
             if(operatorName) {
+                document.getElementById('user-display-card').innerText = `Time for a coffee.`;
                 gsap.to("#auth-overlay", { opacity: 0, pointerEvents: 'none', duration: 1 });
             }
-
-            // Add event listeners for saving profile (works for both login and settings inputs)
-            document.querySelectorAll('#birthday-input').forEach(el => el.addEventListener('change', saveUserBirthday));
-            document.querySelectorAll('#personality-input').forEach(el => el.addEventListener('input', saveUserPersonality));
         };
-
-        function updateProfileUI() {
-            const avatar = document.getElementById('avatar-preview');
-            const profileAvatar = document.getElementById('profile-avatar');
-
-            if (userPhoto) {
-                const img = `<img src="${userPhoto}" alt="Avatar" />`;
-                if (avatar) avatar.innerHTML = img;
-                if (profileAvatar) profileAvatar.innerHTML = img;
-            } else {
-                if (avatar) avatar.innerHTML = `<span class="text-[10px] text-gray-500">Photo</span>`;
-                if (profileAvatar) profileAvatar.innerHTML = '';
-            }
-
-            if (operatorName) {
-                document.getElementById('user-display-card').innerText = `Its coffee time, ${operatorName}!`;
-            }
-        }
-
-        function handleProfilePhoto(event) {
-            const file = event.target.files?.[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                userPhoto = reader.result;
-                localStorage.setItem('llm_user_photo', userPhoto);
-                updateProfileUI();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function saveUserBirthday() {
-            // Keep birthday synced across login screen + settings panel
-            document.querySelectorAll('#birthday-input').forEach(el => {
-                userBirthday = el.value;
-            });
-            localStorage.setItem('llm_user_birthday', userBirthday);
-        }
-
-        function saveUserPersonality() {
-            // Keep personality synced across login screen + settings panel
-            document.querySelectorAll('#personality-input').forEach(el => {
-                userPersonality = el.value;
-            });
-            localStorage.setItem('llm_user_personality', userPersonality);
-        }
-
-        function login() {
-            const nameInput = document.getElementById('name-input');
-            const name = nameInput.value.trim();
-            if (!name) return;
-
-            operatorName = name;
-            localStorage.setItem('llm_op_name', name);
-
-            // Save additional profile info
-            saveUserBirthday();
-            saveUserPersonality();
-
-            // Update profile UI
-            updateProfileUI();
-
-            // Hide auth overlay
-            gsap.to("#auth-overlay", { opacity: 0, pointerEvents: 'none', duration: 1 });
-        }
 
         function setModel(m) {
             currentModel = m;
@@ -847,6 +581,21 @@
         }
 
         function logout() { localStorage.clear(); location.reload(); }
+
+        function login() {
+            const nameInput = document.getElementById('name-input');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            
+            operatorName = name;
+            localStorage.setItem('llm_op_name', name);
+            
+            // Update the display card
+            document.getElementById('user-display-card').innerText = `Time for a coffee.`;
+            
+            // Hide auth overlay
+            gsap.to("#auth-overlay", { opacity: 0, pointerEvents: 'none', duration: 1 });
+        }
 
         function toggleDark() {
             const body = document.body;
@@ -926,6 +675,7 @@
                 // Add randomization for more varied responses
                 const personalities = [
                     "Be helpful and concise, with a touch of humor",
+                    "Be detailed and thorough, like a knowledgeable professor", 
                     "Be creative and imaginative, thinking outside the box",
                     "Be practical and solution-focused, getting straight to the point",
                     "Be friendly and conversational, like chatting with a friend"
@@ -944,7 +694,7 @@
                 
                 let i = 0;
                 const charIncrement = currentModel === 'cute' ? 3 : (currentModel === 'advanced' ? 8 : 5);
-                const charDelay = strategy === 'tensor' ? 8 : Math.max(5, latency/50);
+                const charDelay = strategy === 'tensor' ? 8 : Math.max(5, latency/30);
 
                 const timer = setInterval(() => {
                     if (i < text.length) {
